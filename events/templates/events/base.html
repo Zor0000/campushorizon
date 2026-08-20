@@ -1,0 +1,62 @@
+{% load event_filters %}
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}CampusHorizon{% endblock %}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/htmx.org@1.9.12"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Helvetica Neue', 'Helvetica', 'Arial', 'sans-serif'] },
+                }
+            }
+        }
+    </script>
+    <style>
+        html { scroll-behavior: smooth; }
+        body { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; background: #0A0A0B; }
+        .card-hover:hover { border-color: rgba(255,255,255,0.15); box-shadow: 0 0 30px rgba(255,255,255,0.03); }
+        .glow-hover:hover { box-shadow: 0 0 40px rgba(99, 102, 241, 0.08); }
+        @keyframes fadeSlideIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        main { animation: fadeSlideIn 0.35s ease-out; }
+        .stagger-item { opacity: 0; animation: fadeSlideIn 0.4s ease-out forwards; }
+        .htmx-indicator { opacity: 0; transition: opacity 0.2s; }
+        .htmx-request .htmx-indicator { opacity: 1; }
+        .htmx-request.htmx-indicator { opacity: 1; }
+    </style>
+</head>
+<body class="min-h-screen text-white antialiased">
+    <nav class="border-b border-white/5">
+        <div class="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
+            <a href="{% url 'events:landing' %}" class="flex items-center gap-2">
+                <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center">
+                    <span class="text-white font-bold text-sm">CH</span>
+                </div>
+                <span class="font-semibold text-white/90">CampusHorizon</span>
+            </a>
+            <div class="flex items-center gap-6">
+                <a href="{% url 'events:hackathons' %}" class="text-sm text-white/50 hover:text-white/90 transition-colors">Hackathons</a>
+                <a href="{% url 'events:tech_events' %}" class="text-sm text-white/50 hover:text-white/90 transition-colors">Tech Events</a>
+            </div>
+        </div>
+    </nav>
+
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer class="border-t border-white/5 mt-20">
+        <div class="max-w-6xl mx-auto px-6 py-8 text-center text-sm text-white/30">
+            CampusHorizon &mdash; Self-healing Bright Data scrapers for student hackathons
+        </div>
+    </footer>
+</body>
+</html>
