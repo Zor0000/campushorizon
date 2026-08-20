@@ -54,13 +54,18 @@ events/                   # Django app
   models.py               # Event, EventSnapshot, Source
   scraper/
     config.py             # collector IDs, target URLs, field mappings
-    client.py             # POST /dca/trigger + fetch results
+    client.py             # Bright Data API: POST /dca/trigger, GET /dca/dataset, POST refactor_template
+    normalizer.py         # per-source raw payload → unified Event schema
+    validator.py          # health rules (R0 empty, R1 zero records, R3 missing fields)
+    archive.py            # raw run archive + manifests
   management/commands/
-    collect_events.py     # trigger collectors → normalize → upsert + snapshot
-    heal_check.py         # empty extraction → suggest bdata scraper heal
+    collect_events.py     # offline samples or --online live trigger → normalize → upsert + snapshot
+    heal_check.py         # detect breakage; --auto-heal triggers refactor_template
   views.py, templates/    # dashboard: feed, filters, countdown badges
 static/                   # Tailwind + Chart.js assets
-.github/workflows/collect.yml   # cron pipeline (fresh data, no humans)
+.github/workflows/
+  ci.yml                  # tests on push
+  collect.yml             # nightly live collection + auto-heal + raw artifact
 .env.example              # template; real .env stays gitignored
 README.md
 ```
@@ -69,8 +74,10 @@ README.md
 
 ```bash
 python manage.py runserver
-python manage.py collect_events        # trigger all collectors, upsert events
-python manage.py heal_check           # detect stale/empty extraction
+python manage.py collect_events               # offline from tmp/ samples (default)
+python manage.py collect_events --online      # trigger live collectors via API (needs BRIGHT_DATA_API_TOKEN)
+python manage.py heal_check                   # detect stale/empty extraction
+python manage.py heal_check --auto-heal       # + trigger heal API for broken sources (approve still via CLI)
 python manage.py test events
 ```
 
@@ -88,9 +95,10 @@ python manage.py test events
 
 1. Site changes layout → collector returns empty/missing fields.
 2. Run `heal_check` or inspect run output to confirm the breakage.
-3. `bdata scraper heal <COLLECTOR_ID> "<plain-language description of what broke>"`
-4. `bdata scraper approve <COLLECTOR_ID>`
-5. Re-run `collect_events` → dashboard recovers. Same Collector ID, no code change downstream.
+3. Trigger the heal — CLI (interactive) or `heal_check --auto-heal` (cron/API):
+   `bdata scraper heal <COLLECTOR_ID> "<plain-language description of what broke>"`
+4. `bdata scraper approve <COLLECTOR_ID>` — approval is always manual, even after an auto-heal.
+5. Re-run `collect_events --online` → dashboard recovers. Same Collector ID, no code change downstream.
 6. If heal can't fix it, fall back to `bdata scraper create` and update `config.py` + this file.
 
 ## Do / Don't
@@ -101,3 +109,4 @@ python manage.py test events
 - DON'T scrape login-walled, paywalled, or personal data.
 - DON'T use the Bright Data dashboard as a workflow step.
 - DON'T add sources without updating `config.py`, this file, and the README.
+- DO keep `client.py`'s API surface small: trigger, dataset fetch, refactor_template only.

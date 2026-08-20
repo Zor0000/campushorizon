@@ -1,4 +1,5 @@
 import json
+import os
 import shutil
 from pathlib import Path
 from unittest import mock
@@ -6,12 +7,111 @@ from unittest import mock
 from django.test import TestCase
 
 from events.models import Event, Source
+from events.scraper import client
 from events.scraper.archive import (
     new_run_id, save_raw_run, load_raw, load_latest_raw,
     list_runs, write_manifest, purge_old_runs,
 )
 from events.scraper.validator import validate_source, validate_all, Issue
 from events.scraper.config import COLLECTORS
+
+
+class FakeResp:
+    def __init__(self, status_code, payload=None, text=''):
+        self.status_code = status_code
+        self._payload = payload
+        self.text = text
+
+    def json(self):
+        return self._payload
+
+
+class ClientTest(TestCase):
+    def setUp(self):
+        os.environ['BRIGHT_DATA_API_TOKEN'] = 'test-token'
+
+    def tearDown(self):
+        os.environ.pop('BRIGHT_DATA_API_TOKEN', None)
+
+    @mock.patch('events.scraper.client.requests.request')
+    def test_trigger_collector(self, req):
+        req.return_value = FakeResp(200, {'collection_id': 'j_abc'})
+        collection_id = client.trigger_collector('c_devpost', 'https://devpost.com/hackathons')
+        self.assertEqual(collection_id, 'j_abc')
+        args, kwargs = req.call_args
+        self.assertEqual(kwargs['params']['collector'], 'c_devpost')
+        self.assertEqual(kwargs['json'], [{'url': 'https://devpost.com/hackathons'}])
+        self.assertEqual(kwargs['headers']['Authorization'], 'Bearer test-token')
+
+    @mock.patch('events.scraper.client.requests.request')
+    def test_trigger_retries_on_5xx(self, req):
+        req.side_effect = [
+            FakeResp(503, {}, 'oops'),
+            FakeResp(200, {'collection_id': 'j_retry'}),
+        ]
+        with mock.patch('events.scraper.client.time.sleep'):
+            collection_id = client.trigger_collector('c_devpost', 'https://devpost.com/hackathons')
+        self.assertEqual(collection_id, 'j_retry')
+        self.assertEqual(req.call_count, 2)
+
+    @mock.patch('events.scraper.client.requests.request')
+    def test_trigger_422_raises_with_fix(self, req):
+        req.return_value = FakeResp(422, {}, 'schema mismatch')
+        with self.assertRaises(client.BDAPIError) as ctx:
+            client.trigger_collector('c_devpost', 'https://devpost.com/hackathons')
+        self.assertEqual(ctx.exception.status, 422)
+        self.assertIsNotNone(ctx.exception.fix)
+
+    @mock.patch('events.scraper.client.requests.request')
+    def test_fetch_not_ready_raises(self, req):
+        req.return_value = FakeResp(202, {'status': 'building', 'message': 'try again'})
+        with self.assertRaises(client.CollectionNotReady):
+            client.fetch_dataset('j_abc')
+
+    @mock.patch('events.scraper.client.requests.request')
+    def test_fetch_ready_returns_records(self, req):
+        records = [{'title': 'X', 'url': 'https://x.dev'}]
+        req.return_value = FakeResp(200, records)
+        self.assertEqual(client.fetch_dataset('j_abc'), records)
+
+    @mock.patch('events.scraper.client.requests.request')
+    def test_collect_source_polls_until_ready(self, req):
+        req.side_effect = [
+            FakeResp(200, {'collection_id': 'j_poll'}),
+            FakeResp(202, {'status': 'building'}),
+            FakeResp(202, {'status': 'building'}),
+            FakeResp(200, [{'title': 'Y'}]),
+        ]
+        with mock.patch('events.scraper.client.time.sleep'):
+            records = client.collect_source('devpost', poll_interval=0)
+        self.assertEqual(records, [{'title': 'Y'}])
+        self.assertEqual(req.call_count, 4)
+
+    @mock.patch('events.scraper.client.requests.request')
+    def test_collect_source_times_out(self, req):
+        req.side_effect = [
+            FakeResp(200, {'collection_id': 'j_abc'}),
+            FakeResp(202, {'status': 'building'}),
+        ]
+        mono_values = iter([100.0, 200.0])
+        with mock.patch('events.scraper.client.time.monotonic', side_effect=lambda: next(mono_values)):
+            with self.assertRaises(TimeoutError):
+                client.collect_source('devpost', timeout=0.001, poll_interval=0)
+
+    @mock.patch('events.scraper.client.requests.request')
+    def test_heal_collector(self, req):
+        req.return_value = FakeResp(200, {})
+        ok = client.heal_collector('c_devpost', 'Fix selector issues')
+        self.assertTrue(ok)
+        args, kwargs = req.call_args
+        self.assertIn('/dca/collectors/c_devpost/refactor_template', args[1])
+        self.assertEqual(kwargs['json']['prompt'], 'Fix selector issues')
+
+    def test_missing_token_raises(self):
+        os.environ.pop('BRIGHT_DATA_API_TOKEN', None)
+        with self.assertRaises(client.BDAPIError) as ctx:
+            client.get_api_token()
+        self.assertEqual(ctx.exception.status, 401)
 
 
 class ArchiveTest(TestCase):
@@ -128,6 +228,61 @@ class CollectEventsTest(TestCase):
         initial_count = Event.objects.count()
         call_command('collect_events', '--offline', '--dry-run')
         self.assertEqual(Event.objects.count(), initial_count)
+
+    def test_online_collect_uses_live_data(self):
+        from django.core.management import call_command
+        from events.scraper.normalizer import _load_sample
+        with mock.patch(
+            'events.scraper.client.collect_source',
+            side_effect=lambda source, **kw: _load_sample(source),
+        ):
+            call_command('collect_events', '--online')
+        self.assertGreater(Event.objects.count(), 0)
+
+    def test_online_collect_reports_failures(self):
+        from django.core.management import call_command
+        from django.core.management.base import CommandError
+        with mock.patch(
+            'events.scraper.client.collect_source',
+            side_effect=client.BDAPIError(404, 'collector not found'),
+        ):
+            with self.assertRaises(CommandError) as ctx:
+                call_command('collect_events', '--online')
+        self.assertEqual(ctx.exception.returncode, 1)
+
+
+class HealCheckTest(TestCase):
+    def test_auto_heal_triggers_for_broken_source(self):
+        from django.core.management import call_command
+        with mock.patch(
+            'events.scraper.validator.load_latest_raw',
+            side_effect=FileNotFoundError,
+        ):
+            with mock.patch('events.scraper.validator._load_sample', return_value=[]):
+                with mock.patch('events.scraper.client.heal_collector', return_value=True) as heal:
+                    call_command('heal_check', '--source', 'devpost', '--auto-heal')
+        heal.assert_called_once()
+        args, _kwargs = heal.call_args
+        self.assertEqual(args[0], COLLECTORS['devpost']['collector_id'])
+        self.assertIn('devpost', args[1])
+
+    def test_auto_heal_skips_healthy_sources(self):
+        from django.core.management import call_command
+        with mock.patch('events.scraper.client.heal_collector', return_value=True) as heal:
+            call_command('heal_check', '--source', 'devfolio', '--auto-heal')
+        heal.assert_not_called()
+
+    def test_exit_code_raises_on_errors(self):
+        from django.core.management import call_command
+        from django.core.management.base import CommandError
+        with mock.patch(
+            'events.scraper.validator.load_latest_raw',
+            side_effect=FileNotFoundError,
+        ):
+            with mock.patch('events.scraper.validator._load_sample', return_value=[]):
+                with self.assertRaises(CommandError) as ctx:
+                    call_command('heal_check', '--source', 'devpost', '--exit-code')
+        self.assertEqual(ctx.exception.returncode, 1)
 
 
 class ViewTest(TestCase):
