@@ -56,6 +56,10 @@ These are production endpoints. The agent must reuse them, not re-create scraper
 > (`c_mt2nb1or1052fx65zs`) collectors were replaced via the documented
 > create-fallback after repeated heal failures left them extracting broken
 > data (detail-page timeouts / locale-drift rows). Do not reuse the dead IDs.
+> Also dead: Devfolio v1 (`c_mt0y01c02c02v5dei1`, superseded by v2) and an
+> unfinished lablab build (`c_mt2rsnuh2r56c9y6y4`, AI generation failed).
+> The CLI cannot list/rename/delete collectors — cleanup is manual in the
+> Bright Data dashboard; never delete the six pinned IDs above.
 
 ## Project layout
 
