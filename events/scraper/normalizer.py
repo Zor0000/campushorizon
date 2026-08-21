@@ -15,6 +15,7 @@ MONTH_MAP = {
     'september': 9, 'october': 10, 'november': 11, 'december': 12,
     'jan': 1, 'feb': 2, 'mar': 3, 'apr': 4,
     'jun': 6, 'jul': 7, 'aug': 8, 'sep': 9, 'oct': 10, 'nov': 11, 'dec': 12,
+    'sept': 9,
 }
 
 
@@ -65,17 +66,78 @@ def _parse_date_range(text, year=2026):
     return None
 
 
-def _parse_mlh_date(text):
-    """Parse MLH date like 'JULY 17' → datetime."""
+def _nearest_future_year(month, day, now=None):
+    """Return the year that makes (month, day) the nearest occurrence not in the past."""
+    now = now or datetime.now(timezone.utc)
+    year = now.year
+    try:
+        candidate = datetime(year, month, day, tzinfo=timezone.utc)
+    except ValueError:
+        return year
+    if candidate < now:
+        year += 1
+    return year
+
+
+def _parse_dmy(text):
+    """Parse day-first dates like '28 Aug 2026' or '4 Sept 2026'."""
     if not text:
         return None
-    match = re.match(r'(\w+)\s+(\d{1,2})', text.strip(), re.IGNORECASE)
+    match = re.match(r'^(\d{1,2})\s+(\w+),?\s*(\d{4})$', str(text).strip(), re.IGNORECASE)
+    if not match:
+        return None
+    day, month_str, yr = match.groups()
+    month = MONTH_MAP.get(month_str.lower())
+    if not month or not 1 <= int(day) <= 31:
+        return None
+    return datetime(int(yr), month, int(day), tzinfo=timezone.utc)
+
+
+def _parse_mlh_date(text):
+    """Parse MLH date like 'JULY 17' or 'JULY 17, 2026'. Month/day only → nearest future year."""
+    if not text:
+        return None
+    match = re.match(
+        r'(\w+)\s+(\d{1,2})(?:,?\s*(\d{4}))?',
+        text.strip(), re.IGNORECASE
+    )
+    if not match:
+        return None
+    month_str, day, yr = match.groups()
+    month = MONTH_MAP.get(month_str.lower())
+    if not month:
+        return None
+    day = int(day)
+    if yr:
+        return datetime(int(yr), month, day, tzinfo=timezone.utc)
+    return datetime(_nearest_future_year(month, day), month, day, tzinfo=timezone.utc)
+
+
+def _parse_luma_date(text):
+    """Parse Luma dates: ISO '2026-09-14', '26/9' (D/M) or '26/9/26'. Missing year → nearest future."""
+    if not text:
+        return None
+    text = str(text).strip()
+    iso = re.match(r'^(\d{4})-(\d{1,2})-(\d{1,2})', text)
+    if iso:
+        yr, month, day = (int(g) for g in iso.groups())
+        if 1 <= month <= 12 and 1 <= day <= 31:
+            return datetime(yr, month, day, tzinfo=timezone.utc)
+        return None
+    match = re.match(r'^(\d{1,2})/(\d{1,2})(?:/(\d{2,4}))?$', text)
     if match:
-        month_str, day = match.groups()
-        month = MONTH_MAP.get(month_str.lower())
-        if month:
-            return datetime(2026, month, int(day), tzinfo=timezone.utc)
-    return None
+        day, month, yr = match.groups()
+        day, month = int(day), int(month)
+        if not 1 <= month <= 12 or not 1 <= day <= 31:
+            return None
+        if yr:
+            yr = int(yr)
+            if yr < 100:
+                yr += 2000
+        else:
+            yr = _nearest_future_year(month, day)
+        return datetime(yr, month, day, tzinfo=timezone.utc)
+    return _parse_date_range(text)
 
 
 def _format_prize(prize):
@@ -94,35 +156,38 @@ def _format_prize(prize):
 
 
 def normalize_devpost(raw_data):
-    """Devpost returns a list of pages, each with 'hackathons' key."""
+    """Devpost returns either a flat list of hackathons or a list of pages with 'hackathons' keys."""
     events = []
     seen = set()
 
-    for page in raw_data:
-        hackathons = page.get('hackathons', [])
-        for h in hackathons:
-            url = h.get('hackathon_url', '').split('?')[0]
-            if not url or url in seen:
-                continue
-            seen.add(url)
+    if raw_data and isinstance(raw_data[0], dict) and 'hackathons' in raw_data[0]:
+        records = [h for page in raw_data for h in page.get('hackathons', [])]
+    else:
+        records = raw_data
 
-            deadline = _parse_date_range(h.get('submission_deadline', ''))
-            prize = _format_prize(h.get('prize_amount'))
-            is_online = None
-            loc = h.get('location_type', '')
-            if loc:
-                is_online = 'online' in loc.lower()
+    for h in records:
+        url = h.get('hackathon_url', '').split('?')[0]
+        if not url or url in seen:
+            continue
+        seen.add(url)
 
-            events.append({
-                'title': h.get('title', '').strip(),
-                'source': Source.DEVPOST,
-                'url': url,
-                'deadline': deadline,
-                'prizes': prize,
-                'tags': h.get('tags', []),
-                'is_online': is_online,
-                'location': loc,
-            })
+        deadline = _parse_date_range(h.get('submission_deadline', ''))
+        prize = _format_prize(h.get('prize_amount'))
+        is_online = None
+        loc = h.get('location_type', '')
+        if loc:
+            is_online = 'online' in loc.lower()
+
+        events.append({
+            'title': h.get('title', '').strip(),
+            'source': Source.DEVPOST,
+            'url': url,
+            'deadline': deadline,
+            'prizes': prize,
+            'tags': h.get('tags', []),
+            'is_online': is_online,
+            'location': loc,
+        })
     return events
 
 
@@ -132,15 +197,29 @@ def normalize_luma(raw_data):
     seen = set()
 
     for e in raw_data:
-        url = e.get('event_url', '').rstrip('/')
+        url = e.get('event_url', '').split('?')[0].rstrip('/')
         if not url or url in seen:
             continue
         seen.add(url)
 
         raw_date = e.get('event_date', '')
-        deadline = None
-        if raw_date:
-            deadline = _parse_date_range(raw_date)
+        deadline = _parse_luma_date(raw_date)
+
+        is_online = None
+        for key in ('is_online', 'online', 'event_type', 'event_format', 'format', 'location_type'):
+            value = e.get(key)
+            if value is None:
+                continue
+            if isinstance(value, bool):
+                is_online = value
+                break
+            text = str(value).strip().lower()
+            if text:
+                if 'online' in text or 'virtual' in text:
+                    is_online = True
+                elif 'person' in text or 'venue' in text or 'offline' in text or 'hybrid' in text:
+                    is_online = False
+                break
 
         events.append({
             'title': e.get('event_title', '').strip(),
@@ -172,7 +251,10 @@ def normalize_mlh(raw_data):
 
             start = e.get('start_date', '')
             end = e.get('end_date', '')
-            deadline = _parse_mlh_date(start) or _parse_mlh_date(end)
+            deadline = (
+                _parse_date_range(end) or _parse_mlh_date(end)
+                or _parse_date_range(start) or _parse_mlh_date(start)
+            )
 
             event_type = e.get('event_type', '')
             location = e.get('location', '')
@@ -223,11 +305,135 @@ def normalize_devfolio(raw_data):
     return events
 
 
+def _first(raw, *keys):
+    for key in keys:
+        value = raw.get(key)
+        if value:
+            return value
+    return ''
+
+
+def _parse_bool_flag(value):
+    if isinstance(value, bool):
+        return value
+    text = str(value).strip().lower()
+    if not text:
+        return None
+    if 'online' in text or 'virtual' in text:
+        return True
+    if 'person' in text or 'venue' in text or 'offline' in text:
+        return False
+    return None
+
+
+def _title_from_slug(url):
+    """Derive a readable title from a lablab event slug like /ai-hackathons/ibm-bob-2-hackathon."""
+    slug = url.rstrip('/').rsplit('/', 1)[-1]
+    slug = re.sub(r'^\d+[-_]', '', slug)
+    words = re.split(r'[-_]+', slug)
+    return ' '.join(w.capitalize() for w in words if w)
+
+
+def normalize_lablab(raw_data):
+    """LabLab returns a flat list of hackathon dicts."""
+    events = []
+    seen = set()
+
+    for h in raw_data:
+        url = str(_first(h, 'event_url', 'url', 'product_page_url')).split('?')[0].rstrip('/')
+        if not url or url in seen:
+            continue
+        seen.add(url)
+
+        raw_deadline = _first(h, 'submission_deadline', 'deadline', 'end_date')
+        deadline = (
+            _parse_date_range(raw_deadline)
+            or _parse_dmy(raw_deadline)
+            or _parse_luma_date(str(raw_deadline))
+        )
+        prize = _format_prize(h.get('prize_amount')) or str(_first(h, 'prize', 'prize_pool'))
+
+        fmt = str(_first(h, 'format', 'event_format', 'location_type', 'mode'))
+        is_online = _parse_bool_flag(fmt)
+        location = str(_first(h, 'location', 'venue'))
+        tags = h.get('tech_tags') or h.get('tags') or []
+        if isinstance(tags, str):
+            tags = [t.strip() for t in tags.split(',') if t.strip()]
+        company = h.get('hosting_company') or h.get('company') or h.get('host')
+        if company and str(company) not in tags:
+            tags = tags + [str(company)]
+
+        title = str(_first(h, 'title', 'event_title', 'hackathon_name')).strip()
+        if not title:
+            title = _title_from_slug(url)
+
+        events.append({
+            'title': title,
+            'source': Source.LABLAB,
+            'url': url,
+            'deadline': deadline,
+            'prizes': prize,
+            'tags': tags,
+            'is_online': is_online,
+            'location': location,
+        })
+    return events
+
+
+def normalize_meetup(raw_data):
+    """Meetup returns records that may nest event dicts under an 'events' key."""
+    events = []
+    seen = set()
+
+    flat = []
+    for record in raw_data:
+        nested = record.get('events') if isinstance(record, dict) else None
+        if isinstance(nested, list) and nested:
+            for e in nested:
+                e.setdefault('event_url', record.get('product_page_url') or record.get('event_url', ''))
+                flat.append(e)
+        elif isinstance(record, dict):
+            flat.append(record)
+
+    for e in flat:
+        url = str(_first(e, 'event_url', 'url')).split('?')[0].rstrip('/')
+        if not url or url in seen:
+            continue
+        seen.add(url)
+
+        raw_date = _first(e, 'start_date_time', 'start_date', 'date', 'event_date', 'datetime')
+        deadline = _parse_luma_date(str(raw_date)) or _parse_dmy(str(raw_date)) or _parse_date_range(str(raw_date))
+
+        group = e.get('group_name') or e.get('group')
+        title = str(_first(e, 'title', 'event_title', 'name')).strip()
+        if group and str(group).lower() not in title.lower():
+            title = f'{title} · {group}'
+
+        venue = str(_first(e, 'venue', 'location'))
+        is_online = True if venue.strip().lower() == 'online' else _parse_bool_flag(
+            _first(e, 'is_online', 'online', 'event_type', 'format', 'location_type')
+        )
+
+        events.append({
+            'title': title,
+            'source': Source.MEETUP,
+            'url': url,
+            'deadline': deadline,
+            'prizes': '',
+            'tags': [],
+            'is_online': is_online,
+            'location': '' if venue.strip().lower() == 'online' else venue,
+        })
+    return events
+
+
 NORMALIZERS = {
     'devpost': normalize_devpost,
     'luma': normalize_luma,
     'mlh': normalize_mlh,
     'devfolio': normalize_devfolio,
+    'lablab': normalize_lablab,
+    'meetup': normalize_meetup,
 }
 
 

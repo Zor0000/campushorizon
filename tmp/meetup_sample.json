@@ -1,0 +1,170 @@
+[
+  {
+    "events": [
+      {
+        "title": "DC908 Workshop - Intro to 3D Printing",
+        "start_date_time": "2026-08-27T19:00:00-04:00",
+        "venue": "Westfield Memorial Library",
+        "group_name": "DEF CON 908"
+      }
+    ],
+    "product_page_url": "https://www.meetup.com/defcon908/events/315686278/",
+    "input": {
+      "url": "https://www.meetup.com/find/?source=EVENTS&categoryId=546"
+    }
+  },
+  {
+    "events": [
+      {
+        "title": "Socializing and Trivia for UX Professionals and Friends",
+        "start_date_time": "2026-08-25T19:45:00-04:00",
+        "venue": "Pino's Gift Basket Shoppe and Wine Cellar",
+        "group_name": "User Experience Professionals Association (UXPA), NJ chapter"
+      }
+    ],
+    "product_page_url": "https://www.meetup.com/user-experience-professionals-association-uxpa-nj-chapter/events/315730630/",
+    "input": {
+      "url": "https://www.meetup.com/find/?source=EVENTS&categoryId=546"
+    }
+  },
+  {
+    "events": [
+      {
+        "title": "DC908 Talk - Trust Issues: A PDF’s Guide to Breaking Out of Jail",
+        "start_date_time": "2026-09-10T19:00:00-04:00",
+        "venue": "Westfield Memorial Library",
+        "group_name": "DEF CON 908"
+      }
+    ],
+    "product_page_url": "https://www.meetup.com/defcon908/events/315719232/",
+    "input": {
+      "url": "https://www.meetup.com/find/?source=EVENTS&categoryId=546"
+    }
+  },
+  {
+    "events": [
+      {
+        "title": "How to get your Agentic AI on! ",
+        "start_date_time": "2026-08-26T19:00:00-04:00",
+        "venue": "Online",
+        "group_name": "Getting over the AI Hump"
+      }
+    ],
+    "product_page_url": "https://www.meetup.com/it-pro-ai-hump/events/lbrnwtyjclbjc/",
+    "input": {
+      "url": "https://www.meetup.com/find/?source=EVENTS&categoryId=546"
+    }
+  },
+  {
+    "events": [
+      {
+        "title": "Inside Microsoft IQ: A Walkthrough of Foundry",
+        "start_date_time": "2026-08-31T18:00:00-04:00",
+        "venue": "Online",
+        "group_name": "technology.ai"
+      }
+    ],
+    "product_page_url": "https://www.meetup.com/technology-ai/events/wjfzxtyjclbpc/",
+    "input": {
+      "url": "https://www.meetup.com/find/?source=EVENTS&categoryId=546"
+    }
+  },
+  {
+    "events": [
+      {
+        "title": "FREE 2 HOUR WEBMINAR | ML OPS & GEN AI | CODING MACAW",
+        "start_date_time": "2026-08-21T10:30:00-04:00",
+        "venue": "Online",
+        "group_name": "Coding Macaw FREE Bootcamps"
+      }
+    ],
+    "product_page_url": "https://www.meetup.com/coding-macaw-free-bootcamps/events/315874052/",
+    "input": {
+      "url": "https://www.meetup.com/find/?source=EVENTS&categoryId=546"
+    }
+  },
+  {
+    "events": [
+      {
+        "title": "When AI Agents Work Together: A2A, MCP, and Connected AI",
+        "start_date_time": "2026-08-26T18:00:00-04:00",
+        "venue": "Online",
+        "group_name": "Nashua CLOUD .NET User Group"
+      }
+    ],
+    "product_page_url": "https://www.meetup.com/nashuaug/events/315794091/",
+    "input": {
+      "url": "https://www.meetup.com/find/?source=EVENTS&categoryId=546"
+    }
+  },
+  {
+    "events": [
+      {
+        "title": "What’s New in C#: Modern C# in 2026",
+        "start_date_time": "2026-09-02T19:00:00-04:00",
+        "venue": "Online",
+        "group_name": "technology.ai"
+      }
+    ],
+    "product_page_url": "https://www.meetup.com/technology-ai/events/316192822/",
+    "input": {
+      "url": "https://www.meetup.com/find/?source=EVENTS&categoryId=546"
+    }
+  },
+  {
+    "events": [
+      {
+        "title": "🧶 Craft-n-Crush Your Coding Interview 🖥️ {BYO Craft Supplies}",
+        "start_date_time": "2026-09-02T18:30:00-04:00",
+        "venue": "Online",
+        "group_name": "Women and Gender eXpansive Coders DC - WGXC DC"
+      }
+    ],
+    "product_page_url": "https://www.meetup.com/women-and-gender-expansive-coders-dc-wgxc-dc/events/316201981/",
+    "input": {
+      "url": "https://www.meetup.com/find/?source=EVENTS&categoryId=546"
+    }
+  },
+  {
+    "events": [
+      {
+        "title": "Re-Placed: Answering the Call of Leadership in the Age of AI",
+        "start_date_time": "2026-09-01T12:00:00-04:00",
+        "venue": "Online",
+        "group_name": "The Complexity Lounge"
+      }
+    ],
+    "product_page_url": "https://www.meetup.com/complexitylounge/events/315968287/",
+    "input": {
+      "url": "https://www.meetup.com/find/?source=EVENTS&categoryId=546"
+    }
+  },
+  {
+    "events": [
+      {
+        "title": "Google AI Deep Dive (Ep 3) - multimodal data",
+        "start_date_time": "2026-09-02T12:00:00-04:00",
+        "venue": "Online",
+        "group_name": "AI Professionals Cambridge, Mass."
+      }
+    ],
+    "product_page_url": "https://www.meetup.com/ai-professionals-cambridge-massachusetts/events/316150033/",
+    "input": {
+      "url": "https://www.meetup.com/find/?source=EVENTS&categoryId=546"
+    }
+  },
+  {
+    "events": [
+      {
+        "title": "The Career Reset: Surviving and Thriving in the AI Economy",
+        "start_date_time": "2026-08-21T18:00:00-04:00",
+        "venue": "Online",
+        "group_name": "technology.ai"
+      }
+    ],
+    "product_page_url": "https://www.meetup.com/technology-ai/events/316000632/",
+    "input": {
+      "url": "https://www.meetup.com/find/?source=EVENTS&categoryId=546"
+    }
+  }
+]

@@ -8,6 +8,8 @@ SOURCE_COLORS = {
     'luma': {'bg': 'bg-sky-500/20', 'text': 'text-sky-300', 'border': 'border-sky-500/30', 'label': 'Luma'},
     'mlh': {'bg': 'bg-emerald-500/20', 'text': 'text-emerald-300', 'border': 'border-emerald-500/30', 'label': 'MLH'},
     'devfolio': {'bg': 'bg-purple-500/20', 'text': 'text-purple-300', 'border': 'border-purple-500/30', 'label': 'Devfolio'},
+    'lablab': {'bg': 'bg-fuchsia-500/20', 'text': 'text-fuchsia-300', 'border': 'border-fuchsia-500/30', 'label': 'LabLab'},
+    'meetup': {'bg': 'bg-rose-500/20', 'text': 'text-rose-300', 'border': 'border-rose-500/30', 'label': 'Meetup'},
 }
 
 

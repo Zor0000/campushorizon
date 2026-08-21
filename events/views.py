@@ -6,8 +6,8 @@ from django.utils import timezone
 
 from events.models import Event, Source
 
-HACKATHON_SOURCES = [Source.DEVPOST, Source.MLH, Source.DEVFOLIO]
-TECH_EVENT_SOURCES = [Source.LUMA]
+HACKATHON_SOURCES = [Source.DEVPOST, Source.MLH, Source.DEVFOLIO, Source.LABLAB]
+TECH_EVENT_SOURCES = [Source.LUMA, Source.MEETUP]
 
 # Which filter groups apply per category and their copy.
 # 'source' is always rendered. 'ended' is available everywhere.

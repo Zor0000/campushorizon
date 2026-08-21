@@ -7,6 +7,8 @@ class Source(models.TextChoices):
     LUMA = 'luma', 'Luma'
     MLH = 'mlh', 'MLH'
     DEVFOLIO = 'devfolio', 'Devfolio'
+    LABLAB = 'lablab', 'LabLab'
+    MEETUP = 'meetup', 'Meetup'
 
 
 class Event(models.Model):

@@ -11,3 +11,5 @@ tmp/*
 !tmp/mlh_sample.json
 !tmp/devfolio_sample.json
 !tmp/luma_tech_cat_final.json
+!tmp/lablab_sample.json
+!tmp/meetup_sample.json

@@ -28,10 +28,11 @@ in `tmp/`. It upserts into the `Event` model and snapshots every event into
 
 ## Filters
 
-- **Hackathons** (Devpost, MLH, Devfolio): search, online only, has prizes,
-  ending soon, include ended, per-source, sort by deadline/newest.
-- **Tech Events** (Luma): search, starting soon, include ended, per-source,
-  sort. No prize/online filters — Luma events don't carry that data.
+- **Hackathons** (Devpost, MLH, Devfolio, LabLab): search, online only, has
+  prizes, ending soon, include ended, per-source, sort by deadline/newest.
+- **Tech Events** (Luma, Meetup): search, starting soon, include ended,
+  per-source, sort. No prize/online filters — those events don't carry
+  comparable prize data.
 - Everything is category-aware: prize rows are never rendered for tech events,
   and MLH badges read "Starts in Xd" (its date is a start date, not a deadline).
 
@@ -47,7 +48,7 @@ python manage.py collect_events --online   # trigger → poll → upsert + snaps
 python manage.py heal_check --auto-heal    # detect breakage, auto-trigger heal
 ```
 
-- `--online` triggers all 4 pinned collectors via `POST /dca/trigger`, polls
+- `--online` triggers all 6 pinned collectors via `POST /dca/trigger`, polls
   `GET /dca/dataset` (30s interval, 25 min timeout per collector, configurable
   with `--poll-timeout`), archives raw payloads to `raw/<run_id>` (manifest
   `mode: online`), then normalizes + upserts as usual.
@@ -100,6 +101,13 @@ Pinned Collector IDs (reuse, never rebuild):
 | Luma     | `c_mt09dzgd2mai4o8bhu` | https://luma.com/tech | title, date, location, url |
 | MLH      | `c_mt0hfqqi1q7jk1sdbo` | https://mlh.io/events  | event_name, start_date, end_date, location, event_type, event_url |
 | Devfolio | `c_mt0y94lp18i9rcuhhv` | https://devfolio.co/hackathons | hackathon_name, submission_deadline, prize_amount, product_page_url |
+| LabLab   | `c_mt2pm82fb4ta19gqe` | https://lablab.ai/ai-hackathons | title, url, start/deadline dates, prize, format, tags |
+| Meetup   | `c_mt2qwd9216p13lefvg` | https://www.meetup.com/find/?source=EVENTS&categoryId=546 | title, start datetime, venue, online flag, group name, url |
+
+> **Meetup exception**: Meetup has a pre-built Bright Data scraper in the
+> Scraper Library, but CampusHorizon deliberately uses a **custom collector**
+> for field control (title, start datetime, venue, online flag, group name,
+> url). All other sources are long-tail targets with no pre-built scraper.
 
 See `SCRAPER_1_DEVPOST.md` … `SCRAPER_4_DEVFOLIO.md` and `SCRAPER_SETUP.md`
 for how each collector was built and healed.

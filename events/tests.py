@@ -217,6 +217,122 @@ class ValidatorTest(TestCase):
         self.assertIn('devpost', results)
 
 
+class NormalizerDateTest(TestCase):
+    def test_mlh_month_day_infers_nearest_future_year(self):
+        from datetime import datetime, timezone
+        from events.scraper.normalizer import _parse_mlh_date
+        parsed = _parse_mlh_date('JULY 17')
+        self.assertIsInstance(parsed, datetime)
+        self.assertEqual(parsed.tzinfo, timezone.utc)
+        self.assertGreaterEqual(parsed.replace(tzinfo=None), datetime(2026, 8, 21))
+
+    def test_mlh_explicit_year_respected(self):
+        from events.scraper.normalizer import _parse_mlh_date
+        self.assertEqual(_parse_mlh_date('JULY 17, 2026').year, 2026)
+
+    def test_mlh_time_only_returns_none(self):
+        from events.scraper.normalizer import _parse_mlh_date
+        self.assertIsNone(_parse_mlh_date('10:30AM'))
+
+    def test_luma_day_slash_month_infers_year(self):
+        from events.scraper.normalizer import _parse_luma_date
+        parsed = _parse_luma_date('26/9')
+        self.assertIsNotNone(parsed)
+        self.assertEqual((parsed.month, parsed.day), (9, 26))
+        self.assertGreaterEqual(parsed.year, 2026)
+
+    def test_luma_two_digit_year(self):
+        from events.scraper.normalizer import _parse_luma_date
+        parsed = _parse_luma_date('26/9/26')
+        self.assertEqual((parsed.year, parsed.month, parsed.day), (2026, 9, 26))
+
+    def test_luma_four_digit_year(self):
+        from events.scraper.normalizer import _parse_luma_date
+        parsed = _parse_luma_date('26/9/2026')
+        self.assertEqual((parsed.year, parsed.month, parsed.day), (2026, 9, 26))
+
+    def test_luma_invalid_month_returns_none(self):
+        from events.scraper.normalizer import _parse_luma_date
+        self.assertIsNone(_parse_luma_date('26/13'))
+
+
+LABLAB_RAW = [
+    {
+        'title': 'IBM Bob 2.0 hackathon',
+        'event_url': 'https://lablab.ai/ai-hackathons/ibm-bob-2-hackathon',
+        'start_date': '25 Sept 2026',
+        'end_date': '27 Sept 2026',
+        'prize_amount': {'value': 10000, 'currency': 'USD', 'symbol': '$'},
+        'format': 'Online · 48 hours',
+        'tech_tags': ['AI', 'Agents'],
+        'hosting_company': 'IBM',
+    },
+    {
+        'title': 'AI Infra Summit Hackathon',
+        'url': 'https://lablab.ai/ai-hackathons/ai-infra-summit-hackathon',
+        'end_date': '17 Sept 2026',
+        'prize': '$25,000',
+        'format': 'Hybrid',
+        'location': 'Santa Clara, CA',
+    },
+]
+
+MEETUP_RAW = [
+    {
+        'title': 'SF Tech Talks',
+        'event_url': 'https://www.meetup.com/sf-tech/events/12345/',
+        'start_date': '28/8/2026',
+        'venue': 'San Francisco, CA',
+        'is_online': False,
+        'group_name': 'SF Tech',
+    },
+    {
+        'title': 'Python Virtual Meetup',
+        'url': 'https://www.meetup.com/py-group/events/67890/',
+        'date': 'Sep 2, 2026',
+        'event_type': 'Online',
+        'group': 'Py Group',
+    },
+]
+
+
+class NewSourceNormalizerTest(TestCase):
+    def test_normalize_lablab_maps_fields(self):
+        from events.scraper.normalizer import normalize_lablab
+        events = normalize_lablab(LABLAB_RAW)
+        self.assertEqual(len(events), 2)
+        first = events[0]
+        self.assertEqual(first['source'], Source.LABLAB)
+        self.assertEqual(first['title'], 'IBM Bob 2.0 hackathon')
+        self.assertIn('$10,000', first['prizes'])
+        self.assertTrue(first['is_online'])
+        self.assertIn('IBM', first['tags'])
+        self.assertIsNotNone(first['deadline'])
+
+    def test_normalize_lablab_dedup_by_url(self):
+        from events.scraper.normalizer import normalize_lablab
+        events = normalize_lablab(LABLAB_RAW + [LABLAB_RAW[0]])
+        self.assertEqual(len(events), 2)
+
+    def test_normalize_meetup_maps_fields(self):
+        from events.scraper.normalizer import normalize_meetup
+        events = normalize_meetup(MEETUP_RAW)
+        self.assertEqual(len(events), 2)
+        first = events[0]
+        self.assertEqual(first['source'], Source.MEETUP)
+        self.assertEqual(first['location'], 'San Francisco, CA')
+        self.assertFalse(first['is_online'])
+        self.assertIsNotNone(first['deadline'])
+        second = events[1]
+        self.assertTrue(second['is_online'])
+        self.assertIn('Py Group', second['title'])
+
+    def test_normalize_meetup_dedup_by_url(self):
+        from events.scraper.normalizer import normalize_meetup
+        events = normalize_meetup(MEETUP_RAW + [MEETUP_RAW[0]])
+        self.assertEqual(len(events), 2)
+
+
 class CollectEventsTest(TestCase):
     def test_offline_collect(self):
         from django.core.management import call_command
@@ -314,6 +430,22 @@ class ViewTest(TestCase):
         resp = self.client.get('/tech-events/')
         content = resp.content.decode()
         self.assertIn('Luma', content)
+
+    def test_hackathons_has_lablab_badge(self):
+        resp = self.client.get('/hackathons/')
+        content = resp.content.decode()
+        self.assertIn('LabLab', content)
+        self.assertIn('value="lablab"', content)
+
+    def test_tech_events_has_meetup_badge(self):
+        resp = self.client.get('/tech-events/')
+        content = resp.content.decode()
+        self.assertIn('Meetup', content)
+        self.assertIn('value="meetup"', content)
+
+    def test_offline_collect_imports_new_sources(self):
+        self.assertTrue(Event.objects.filter(source=Source.LABLAB).exists())
+        self.assertTrue(Event.objects.filter(source=Source.MEETUP).exists())
 
     def test_filter_online(self):
         resp = self.client.get('/hackathons/?online=1')

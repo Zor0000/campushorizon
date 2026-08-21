@@ -3,7 +3,7 @@ from events.scraper.normalizer import NORMALIZERS, _load_sample
 from events.scraper.archive import load_latest_raw, load_raw
 from events.models import Event, Source
 
-DEADLINE_SOURCES = {'devpost', 'devfolio', 'mlh'}
+DEADLINE_SOURCES = {'devpost', 'devfolio', 'mlh', 'lablab'}
 REQUIRED_FIELDS = {'title', 'url'}
 
 

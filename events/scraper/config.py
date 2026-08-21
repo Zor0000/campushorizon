@@ -23,11 +23,25 @@ COLLECTORS = {
         'target_url': 'https://devfolio.co/hackathons',
         'sample_file': 'devfolio_sample.json',
     },
+    'lablab': {
+        'collector_id': 'c_mt2pm82fb4ta19gqe',
+        'name': 'lablab-ai-hackathons',
+        'target_url': 'https://lablab.ai/ai-hackathons',
+        'sample_file': 'lablab_sample.json',
+    },
+    'meetup': {
+        'collector_id': 'c_mt2qwd9216p13lefvg',
+        'name': 'meetup-tech-events',
+        'target_url': 'https://www.meetup.com/find/?source=EVENTS&categoryId=546',
+        'sample_file': 'meetup_sample.json',
+    },
 }
 
 SOURCE_CATEGORIES = {
     'devpost': 'hackathon',
     'mlh': 'hackathon',
     'devfolio': 'hackathon',
+    'lablab': 'hackathon',
     'luma': 'tech_event',
+    'meetup': 'tech_event',
 }

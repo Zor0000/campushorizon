@@ -1,1 +1,52 @@
-[{"event_title":"JEWEL CITY HACKS 5.0","event_date":"26/9","location":"Glendale, CA","event_url":"https://luma.com/jewelcityhacks5","product_page_url":"https://luma.com/jewelcityhacks5","input":{"url":"https://luma.com/tech"}},{"event_title":"Pasadena Climate Happy Hour","event_date":"27/9","location":"Pasadena, CA","event_url":"https://luma.com/1fk9ei17","product_page_url":"https://luma.com/1fk9ei17","input":{"url":"https://luma.com/tech"}},{"event_title":"LA Social & Tech Meetup | ~ Pasadena ~ (POTLUCK)","event_date":"29/9","location":"Pasadena, CA","event_url":"https://luma.com/i8irgkrv","product_page_url":"https://luma.com/i8irgkrv","input":{"url":"https://luma.com/tech"}},{"event_title":"Tech Job Fair","event_date":"24/9","location":"Glendale, CA","event_url":"https://luma.com/7rn7202u","product_page_url":"https://luma.com/7rn7202u","input":{"url":"https://luma.com/tech"}},{"event_title":"The Water-Energy Nexus: Pasadena Edition","event_date":"14/9","location":"Pasadena, CA","event_url":"https://luma.com/0mj6hae0","product_page_url":"https://luma.com/0mj6hae0","input":{"url":"https://luma.com/tech"}},{"input":{"url":"https://luma.com/tech"},"error":"Crawler error: waiting for selector \"h1.title.text-primary\" failed: timeout 30000ms exceeded","error_code":"wait_element_timeout"},{"input":{"url":"https://luma.com/tech"},"error":"Crawler error: waiting for selector \"h1.title.text-primary\" failed: timeout 30000ms exceeded","error_code":"wait_element_timeout"},{"input":{"url":"https://luma.com/tech"},"error":"Crawler error: waiting for selector \"h1.title.text-primary\" failed: timeout 30000ms exceeded","error_code":"wait_element_timeout"},{"input":{"url":"https://luma.com/tech"},"error":"Crawler error: waiting for selector \"h1.title.text-primary\" failed: timeout 30000ms exceeded","error_code":"wait_element_timeout"},{"input":{"url":"https://luma.com/tech"},"error":"Crawler error: waiting for selector \"h1.title.text-primary\" failed: timeout 30000ms exceeded","error_code":"wait_element_timeout"}]
+[
+  {
+    "event_title": "Tech Week Grand Rapids",
+    "event_date": "2026-09-14",
+    "location": "Grand Rapids",
+    "event_url": "https://luma.com/techweekgr?k=c",
+    "product_page_url": "https://luma.com/techweekgr?k=c",
+    "event_type": "in-person",
+    "input": {
+      "url": "https://luma.com/tech"
+    }
+  },
+  {
+    "event_title": "Nucleate Global Events Calendar",
+    "event_url": "https://luma.com/nucleate?k=c",
+    "product_page_url": "https://luma.com/nucleate?k=c",
+    "event_type": "in-person",
+    "input": {
+      "url": "https://luma.com/tech"
+    }
+  },
+  {
+    "event_title": "Y Combinator",
+    "event_url": "https://luma.com/ycombinator-official?k=c",
+    "product_page_url": "https://luma.com/ycombinator-official?k=c",
+    "event_type": "in-person",
+    "input": {
+      "url": "https://luma.com/tech"
+    }
+  },
+  {
+    "event_title": "Lenny's Newsletter Meetups",
+    "event_url": "https://luma.com/lennysnewsletter?k=c",
+    "product_page_url": "https://luma.com/lennysnewsletter?k=c",
+    "event_type": "in-person",
+    "input": {
+      "url": "https://luma.com/tech"
+    }
+  },
+  {
+    "input": {
+      "url": "https://luma.com/tech"
+    },
+    "error": "Crawler error: waiting for selector \"h1\" failed: timeout 30000ms exceeded"
+  },
+  {
+    "input": {
+      "url": "https://luma.com/tech"
+    },
+    "error": "Crawler error: waiting for selector \"h1\" failed: timeout 30000ms exceeded"
+  }
+]

@@ -10,8 +10,12 @@ downstream breaks.
 - Scrape **publicly available data only**. No login-walled, paywalled, or
   personal data. No X/Twitter.
 - **Only long-tail targets**: sites without a pre-built Bright Data scraper.
-  Devpost, Luma, MLH, and Devfolio confirmed absent from the Scraper Library.
-  Verify any new target before adding it.
+  Devpost, Luma, MLH, Devfolio, and LabLab confirmed absent from the Scraper
+  Library. Verify any new target before adding it.
+- **Documented exception — Meetup**: Meetup *does* have a pre-built Bright Data
+  scraper, but the user explicitly chose a custom collector for it (control over
+  fields: title, start date, venue, online flag, group name, url). Do not replace
+  it with the library scraper without asking.
 - **Never commit or print secrets**: `.env` is gitignored. Mask tokens in demos.
 - The terminal is the UI: drive everything through the Bright Data CLI, not the dashboard.
 - Every change must keep the pipeline reproducible: a judge can clone and run it.
@@ -41,9 +45,17 @@ These are production endpoints. The agent must reuse them, not re-create scraper
 | Luma     | `c_mt09dzgd2mai4o8bhu` | `https://luma.com/tech` | title, date, location, url |
 | MLH      | `c_mt0hfqqi1q7jk1sdbo` | `https://mlh.io/events`  | event_name, start_date, end_date, location, event_type, event_url |
 | Devfolio | `c_mt0y94lp18i9rcuhhv` | `https://devfolio.co/hackathons` | hackathon_name, submission_deadline, prize_amount, product_page_url |
+| LabLab   | `c_mt2pm82fb4ta19gqe` | `https://lablab.ai/ai-hackathons` | title, url, start/deadline dates, prize, format, tags |
+| Meetup   | `c_mt2qwd9216p13lefvg` | `https://www.meetup.com/find/?source=EVENTS&categoryId=546` | title, start datetime, venue, online flag, group name, url (custom-collector exception) |
 
-> **TODO (setup day 1):** run `bdata scraper create` for each target and fill
-> in the IDs above. Until filled, do not guess; ask the user.
+> These IDs are live production collectors. Reuse them; only run
+> `bdata scraper create` for a brand-new target, then add its row above and to
+> `config.py` + README.
+>
+> **History**: the first lablab (`c_mt2n5ie32qzka71trc`) and meetup
+> (`c_mt2nb1or1052fx65zs`) collectors were replaced via the documented
+> create-fallback after repeated heal failures left them extracting broken
+> data (detail-page timeouts / locale-drift rows). Do not reuse the dead IDs.
 
 ## Project layout
 
