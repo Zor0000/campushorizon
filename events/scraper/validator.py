@@ -24,8 +24,9 @@ class Issue:
 
 def _check_rule_r0(source, raw_data):
     if not raw_data:
+        target_url = COLLECTORS[source].get('target_url') or COLLECTORS[source].get('api_url', '')
         return [Issue('error', 'R0', f'{source}: raw data is empty',
-                      f'bdata scraper create {COLLECTORS[source]["target_url"]} "..."')]
+                      f'bdata scraper create {target_url} "..."')]
     return []
 
 
@@ -33,8 +34,12 @@ def _check_rule_r1(source, raw_data):
     normalizer = NORMALIZERS[source]
     normalized = normalizer(raw_data)
     if len(normalized) == 0:
-        return [Issue('error', 'R1', f'{source}: 0 records extracted from valid data',
-                      f'npx -p @brightdata/cli bdata scraper heal {COLLECTORS[source]["collector_id"]} "extraction returned 0 records - likely layout change"')]
+        collector_id = COLLECTORS[source].get('collector_id')
+        if collector_id:
+            fix = f'npx -p @brightdata/cli bdata scraper heal {collector_id} "extraction returned 0 records - likely layout change"'
+        else:
+            fix = f'Check API endpoint or sample file for {source}'
+        return [Issue('error', 'R1', f'{source}: 0 records extracted from valid data', fix)]
     return []
 
 

@@ -8,6 +8,8 @@ raw/
 *.egg-info/
 tmp/*
 !tmp/devpost_sample.json
+!tmp/devpost_online_sample.json
+!tmp/devpost_india_sample.json
 !tmp/mlh_sample.json
 !tmp/devfolio_sample.json
 !tmp/luma_tech_cat_final.json

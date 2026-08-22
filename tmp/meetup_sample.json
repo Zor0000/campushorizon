@@ -2,169 +2,645 @@
   {
     "events": [
       {
-        "title": "DC908 Workshop - Intro to 3D Printing",
-        "start_date_time": "2026-08-27T19:00:00-04:00",
-        "venue": "Westfield Memorial Library",
-        "group_name": "DEF CON 908"
+        "title": "Kolkata WordPress August  Meetup",
+        "start_date_time": "2026-08-29T17:30:00+05:30",
+        "venue": "Calcutta mansion",
+        "group_name": "Kolkata WordPress Meetup"
       }
     ],
-    "product_page_url": "https://www.meetup.com/defcon908/events/315686278/",
+    "product_page_url": "https://www.meetup.com/kolkatawordpressmeetups/events/315918090/",
     "input": {
-      "url": "https://www.meetup.com/find/?source=EVENTS&categoryId=546"
+      "url": "https://www.meetup.com/find/?location=in--Kolkata&source=EVENTS&categoryId=546"
     }
   },
   {
     "events": [
       {
-        "title": "Socializing and Trivia for UX Professionals and Friends",
-        "start_date_time": "2026-08-25T19:45:00-04:00",
-        "venue": "Pino's Gift Basket Shoppe and Wine Cellar",
-        "group_name": "User Experience Professionals Association (UXPA), NJ chapter"
+        "title": "Bitcoin 101: How Digital Money Works Without Banks | Kolkata",
+        "start_date_time": "2026-08-22T11:30:00+05:30",
+        "venue": "Ambuja Neotia Ecocentre",
+        "group_name": "Bitshala"
       }
     ],
-    "product_page_url": "https://www.meetup.com/user-experience-professionals-association-uxpa-nj-chapter/events/315730630/",
+    "product_page_url": "https://www.meetup.com/bitshala/events/315877215/",
     "input": {
-      "url": "https://www.meetup.com/find/?source=EVENTS&categoryId=546"
+      "url": "https://www.meetup.com/find/?location=in--Kolkata&source=EVENTS&categoryId=546"
     }
   },
   {
     "events": [
       {
-        "title": "DC908 Talk - Trust Issues: A PDF’s Guide to Breaking Out of Jail",
-        "start_date_time": "2026-09-10T19:00:00-04:00",
-        "venue": "Westfield Memorial Library",
-        "group_name": "DEF CON 908"
-      }
-    ],
-    "product_page_url": "https://www.meetup.com/defcon908/events/315719232/",
-    "input": {
-      "url": "https://www.meetup.com/find/?source=EVENTS&categoryId=546"
-    }
-  },
-  {
-    "events": [
-      {
-        "title": "How to get your Agentic AI on! ",
-        "start_date_time": "2026-08-26T19:00:00-04:00",
+        "title": "AI First Engineering: Ship with Coding Agents",
+        "start_date_time": "2026-08-29T16:00:00+05:30",
         "venue": "Online",
-        "group_name": "Getting over the AI Hump"
+        "group_name": "Agentic Engineering and Modern Deployments"
       }
     ],
-    "product_page_url": "https://www.meetup.com/it-pro-ai-hump/events/lbrnwtyjclbjc/",
+    "product_page_url": "https://www.meetup.com/agentic-engineering-and-modern-deployments/events/315933949/",
     "input": {
-      "url": "https://www.meetup.com/find/?source=EVENTS&categoryId=546"
+      "url": "https://www.meetup.com/find/?location=in--Kolkata&source=EVENTS&categoryId=546"
     }
   },
   {
     "events": [
       {
-        "title": "Inside Microsoft IQ: A Walkthrough of Foundry",
-        "start_date_time": "2026-08-31T18:00:00-04:00",
+        "title": "WhatsApp Application Software Architecture ",
+        "start_date_time": "2026-08-22T16:00:00+05:30",
         "venue": "Online",
-        "group_name": "technology.ai"
+        "group_name": "Software Architecture and System Design or Core Design"
       }
     ],
-    "product_page_url": "https://www.meetup.com/technology-ai/events/wjfzxtyjclbpc/",
+    "product_page_url": "https://www.meetup.com/software-architecture-and-system-design-or-core-design/events/315885503/",
     "input": {
-      "url": "https://www.meetup.com/find/?source=EVENTS&categoryId=546"
+      "url": "https://www.meetup.com/find/?location=in--Kolkata&source=EVENTS&categoryId=546"
     }
   },
   {
     "events": [
       {
-        "title": "FREE 2 HOUR WEBMINAR | ML OPS & GEN AI | CODING MACAW",
-        "start_date_time": "2026-08-21T10:30:00-04:00",
+        "title": "The Builder's Era : Build your career",
+        "start_date_time": "2026-08-22T18:30:00+05:00",
         "venue": "Online",
-        "group_name": "Coding Macaw FREE Bootcamps"
+        "group_name": "AWS SBG at National University of Sciences and Technology"
       }
     ],
-    "product_page_url": "https://www.meetup.com/coding-macaw-free-bootcamps/events/315874052/",
+    "product_page_url": "https://www.meetup.com/aws-sbg-at-national-university-of-sciences-and-technology/events/315282847/",
     "input": {
-      "url": "https://www.meetup.com/find/?source=EVENTS&categoryId=546"
+      "url": "https://www.meetup.com/find/?location=in--Kolkata&source=EVENTS&categoryId=546"
     }
   },
   {
     "events": [
       {
-        "title": "When AI Agents Work Together: A2A, MCP, and Connected AI",
-        "start_date_time": "2026-08-26T18:00:00-04:00",
+        "title": "KSUG.AI India #9 Cloud Native & AI Meetup @Cloudera - 22 Aug 2026",
+        "start_date_time": "2026-08-22T10:00:00+05:30",
         "venue": "Online",
-        "group_name": "Nashua CLOUD .NET User Group"
+        "group_name": "KSUG.AI India"
       }
     ],
-    "product_page_url": "https://www.meetup.com/nashuaug/events/315794091/",
+    "product_page_url": "https://www.meetup.com/ksug-in/events/315745850/",
     "input": {
-      "url": "https://www.meetup.com/find/?source=EVENTS&categoryId=546"
+      "url": "https://www.meetup.com/find/?location=in--Kolkata&source=EVENTS&categoryId=546"
     }
   },
   {
     "events": [
       {
-        "title": "What’s New in C#: Modern C# in 2026",
-        "start_date_time": "2026-09-02T19:00:00-04:00",
-        "venue": "Online",
-        "group_name": "technology.ai"
+        "title": "Beyond the Hype: What’s Actually Working in AI",
+        "start_date_time": "2026-08-22T09:30:00+05:30",
+        "venue": "Microsoft Corporation India Pvt. Ltd.",
+        "group_name": "TechNexus Community"
       }
     ],
-    "product_page_url": "https://www.meetup.com/technology-ai/events/316192822/",
+    "product_page_url": "https://www.meetup.com/technexus-community/events/315833402/",
     "input": {
-      "url": "https://www.meetup.com/find/?source=EVENTS&categoryId=546"
+      "url": "https://www.meetup.com/find/?location=in--Chennai&source=EVENTS&categoryId=546"
     }
   },
   {
     "events": [
       {
-        "title": "🧶 Craft-n-Crush Your Coding Interview 🖥️ {BYO Craft Supplies}",
-        "start_date_time": "2026-09-02T18:30:00-04:00",
-        "venue": "Online",
-        "group_name": "Women and Gender eXpansive Coders DC - WGXC DC"
+        "title": "KubeKotha X Grafana & Friends",
+        "start_date_time": "2026-08-22T11:30:00+05:30",
+        "venue": "Techno Main Salt Lake",
+        "group_name": "Grafana & Friends Kolkata"
       }
     ],
-    "product_page_url": "https://www.meetup.com/women-and-gender-expansive-coders-dc-wgxc-dc/events/316201981/",
+    "product_page_url": "https://www.meetup.com/grafana-and-friends-kolkata/events/315963601/",
     "input": {
-      "url": "https://www.meetup.com/find/?source=EVENTS&categoryId=546"
+      "url": "https://www.meetup.com/find/?location=in--Kolkata&source=EVENTS&categoryId=546"
     }
   },
   {
     "events": [
       {
-        "title": "Re-Placed: Answering the Call of Leadership in the Age of AI",
-        "start_date_time": "2026-09-01T12:00:00-04:00",
-        "venue": "Online",
-        "group_name": "The Complexity Lounge"
+        "title": "Chennai Freelancers Club - Monthly Meetup August 2026",
+        "start_date_time": "2026-08-29T10:00:00+05:30",
+        "venue": "Chennai",
+        "group_name": "Makers Tribe"
       }
     ],
-    "product_page_url": "https://www.meetup.com/complexitylounge/events/315968287/",
+    "product_page_url": "https://www.meetup.com/makers-tribe/events/315986272/",
     "input": {
-      "url": "https://www.meetup.com/find/?source=EVENTS&categoryId=546"
+      "url": "https://www.meetup.com/find/?location=in--Chennai&source=EVENTS&categoryId=546"
     }
   },
   {
     "events": [
       {
-        "title": "Google AI Deep Dive (Ep 3) - multimodal data",
-        "start_date_time": "2026-09-02T12:00:00-04:00",
-        "venue": "Online",
-        "group_name": "AI Professionals Cambridge, Mass."
+        "title": "AI Evaluation Strategy & Rethinking Enterprise Authorisation Beyond JWTs",
+        "start_date_time": "2026-08-29T10:30:00+05:30",
+        "venue": "IndiQube Alpine",
+        "group_name": "Expert Talks Chennai"
       }
     ],
-    "product_page_url": "https://www.meetup.com/ai-professionals-cambridge-massachusetts/events/316150033/",
+    "product_page_url": "https://www.meetup.com/expert-talks-chennai/events/315903359/",
     "input": {
-      "url": "https://www.meetup.com/find/?source=EVENTS&categoryId=546"
+      "url": "https://www.meetup.com/find/?location=in--Chennai&source=EVENTS&categoryId=546"
     }
   },
   {
     "events": [
       {
-        "title": "The Career Reset: Surviving and Thriving in the AI Economy",
-        "start_date_time": "2026-08-21T18:00:00-04:00",
-        "venue": "Online",
-        "group_name": "technology.ai"
+        "title": "The Live Reset Room - A 90-Minute Session to Calm a Overloaded & Racing Mind",
+        "start_date_time": "2026-08-22T10:00:00+05:30",
+        "venue": "Chennai",
+        "group_name": "Makers Tribe"
       }
     ],
-    "product_page_url": "https://www.meetup.com/technology-ai/events/316000632/",
+    "product_page_url": "https://www.meetup.com/makers-tribe/events/316180274/",
     "input": {
-      "url": "https://www.meetup.com/find/?source=EVENTS&categoryId=546"
+      "url": "https://www.meetup.com/find/?location=in--Chennai&source=EVENTS&categoryId=546"
+    }
+  },
+  {
+    "events": [
+      {
+        "title": "Workshop: Claude Code: Data Architects",
+        "start_date_time": "2026-09-05T09:30:00+05:30",
+        "venue": "PRO - Office",
+        "group_name": "Microsoft Azure User Group - Chennai"
+      }
+    ],
+    "product_page_url": "https://www.meetup.com/chennai-microsoft-azure-user-group/events/315773199/",
+    "input": {
+      "url": "https://www.meetup.com/find/?location=in--Chennai&source=EVENTS&categoryId=546"
+    }
+  },
+  {
+    "events": [
+      {
+        "title": " 𝐓𝐡𝐞 𝐅𝐨𝐮𝐧𝐝𝐞𝐫𝐬 𝐒𝐚𝐥𝐞𝐬 𝐏𝐥𝐚𝐲𝐛𝐨𝐨𝐤",
+        "start_date_time": "2026-08-29T10:00:00+05:30",
+        "venue": "Contus tech",
+        "group_name": "Valar Service Business Experts"
+      }
+    ],
+    "product_page_url": "https://www.meetup.com/valar-service-business-experts/events/316069130/",
+    "input": {
+      "url": "https://www.meetup.com/find/?location=in--Chennai&source=EVENTS&categoryId=546"
+    }
+  },
+  {
+    "events": [
+      {
+        "title": "August Meetup",
+        "start_date_time": "2026-08-22T15:00:00+05:30",
+        "venue": "Zilogic Systems Pvt. Ltd",
+        "group_name": "Chennaipy"
+      }
+    ],
+    "product_page_url": "https://www.meetup.com/chennaipy/events/316082365/",
+    "input": {
+      "url": "https://www.meetup.com/find/?location=in--Chennai&source=EVENTS&categoryId=546"
+    }
+  },
+  {
+    "events": [
+      {
+        "title": "Building AI Agents with Microsoft Foundry and MCP Using Azure Logic Apps",
+        "start_date_time": "2026-08-28T10:30:00+05:30",
+        "venue": "Online",
+        "group_name": "Microsoft Reactor Bengaluru"
+      }
+    ],
+    "product_page_url": "https://www.meetup.com/microsoft-reactor-bengaluru/events/315702845/",
+    "input": {
+      "url": "https://www.meetup.com/find/?location=in--Kolkata&source=EVENTS&categoryId=546"
+    }
+  },
+  {
+    "events": [
+      {
+        "title": "The Platform Habba: Bengaluru Tech Week 2026",
+        "start_date_time": "2026-09-05T10:30:00+05:30",
+        "venue": "Freshworks Bengaluru",
+        "group_name": "Platform Engineering & Resilience Engineering Meetup"
+      }
+    ],
+    "product_page_url": "https://www.meetup.com/platform-resilience-engineering-meetup-group/events/315988168/",
+    "input": {
+      "url": "https://www.meetup.com/find/?location=in--Bangalore&source=EVENTS&categoryId=546"
+    }
+  },
+  {
+    "events": [
+      {
+        "title": "Hackers Occupied Pune is finally here! 🔥",
+        "start_date_time": "2026-08-22T10:00:00+05:30",
+        "venue": "Vishwakarma Institute of Technology ,Pune",
+        "group_name": "Pune Developer's Community"
+      }
+    ],
+    "product_page_url": "https://www.meetup.com/pune-developers-community/events/315829898/",
+    "input": {
+      "url": "https://www.meetup.com/find/?location=in--Pune&source=EVENTS&categoryId=546"
+    }
+  },
+  {
+    "events": [
+      {
+        "title": "Grafana & Friends x Kubernetes Pune Happy Hours",
+        "start_date_time": "2026-09-05T10:00:00+05:30",
+        "venue": "InfraCloud - An Improving Company",
+        "group_name": "Grafana & Friends Pune"
+      }
+    ],
+    "product_page_url": "https://www.meetup.com/grafana-friends-pune/events/316130935/",
+    "input": {
+      "url": "https://www.meetup.com/find/?location=in--Pune&source=EVENTS&categoryId=546"
+    }
+  },
+  {
+    "events": [
+      {
+        "title": "Cloud-Native & AI Unlocked : Bengaluru Edition",
+        "start_date_time": "2026-08-22T10:00:00+05:30",
+        "venue": "Online",
+        "group_name": "Cloud Computing Circle"
+      }
+    ],
+    "product_page_url": "https://www.meetup.com/cloud-computing-circle/events/315929715/",
+    "input": {
+      "url": "https://www.meetup.com/find/?location=in--Bangalore&source=EVENTS&categoryId=546"
+    }
+  },
+  {
+    "events": [
+      {
+        "title": "Cloud-Native & AI Unlocked",
+        "start_date_time": "2026-08-22T09:30:00+05:30",
+        "venue": "Online",
+        "group_name": "Future of Data: Bangalore"
+      }
+    ],
+    "product_page_url": "https://www.meetup.com/futureofdata-bangalore/events/315774407/",
+    "input": {
+      "url": "https://www.meetup.com/find/?location=in--Bangalore&source=EVENTS&categoryId=546"
+    }
+  },
+  {
+    "events": [
+      {
+        "title": "Cloud-Native & AI Unlocked",
+        "start_date_time": "2026-08-22T10:30:00+05:30",
+        "venue": "Cloudera office",
+        "group_name": "AI XCHANGE - Meetup Group"
+      }
+    ],
+    "product_page_url": "https://www.meetup.com/ai-xchange/events/315856192/",
+    "input": {
+      "url": "https://www.meetup.com/find/?location=in--Bangalore&source=EVENTS&categoryId=546"
+    }
+  },
+  {
+    "events": [
+      {
+        "title": "Global AI Construct Pune",
+        "start_date_time": "2026-08-22T10:00:00+05:30",
+        "venue": "Data-Axle Solutions",
+        "group_name": "Pune Tech Community"
+      }
+    ],
+    "product_page_url": "https://www.meetup.com/pune-tech-community/events/316069306/",
+    "input": {
+      "url": "https://www.meetup.com/find/?location=in--Pune&source=EVENTS&categoryId=546"
+    }
+  },
+  {
+    "events": [
+      {
+        "title": "[In-Person] August Java Meet-up at Lastminute",
+        "start_date_time": "2026-08-29T09:30:00+05:30",
+        "venue": "Lastminute.com",
+        "group_name": "Bangalore Java User Group (Bangalore JUG)"
+      }
+    ],
+    "product_page_url": "https://www.meetup.com/bangalorejug/events/316054356/",
+    "input": {
+      "url": "https://www.meetup.com/find/?location=in--Bangalore&source=EVENTS&categoryId=546"
+    }
+  },
+  {
+    "events": [
+      {
+        "title": "OWASP/Null Combined Meet - 22nd August Bangalore ",
+        "start_date_time": "2026-08-22T09:00:00+05:30",
+        "venue": "Online",
+        "group_name": "OWASP Bangalore Chapter"
+      }
+    ],
+    "product_page_url": "https://www.meetup.com/owasp-bangalore-chapter/events/315878257/",
+    "input": {
+      "url": "https://www.meetup.com/find/?location=in--Bangalore&source=EVENTS&categoryId=546"
+    }
+  },
+  {
+    "events": [
+      {
+        "title": "The LinkedIn Game",
+        "start_date_time": "2026-09-06T10:00:00+05:30",
+        "venue": "DevX",
+        "group_name": "Indian Data Club"
+      }
+    ],
+    "product_page_url": "https://www.meetup.com/indian-data-club/events/316055976/",
+    "input": {
+      "url": "https://www.meetup.com/find/?location=in--Hyderabad&source=EVENTS&categoryId=546"
+    }
+  },
+  {
+    "events": [
+      {
+        "title": "MUG <> AWS UG:  Cloud & Data Innovation Day with NOKIA",
+        "start_date_time": "2026-09-06T09:00:00+05:30",
+        "venue": "Nokia L5 Manyata Business Park",
+        "group_name": "Bengaluru MongoDB User Group"
+      }
+    ],
+    "product_page_url": "https://www.meetup.com/mongodb-usergroup-bengaluru/events/316096728/",
+    "input": {
+      "url": "https://www.meetup.com/find/?location=in--Bangalore&source=EVENTS&categoryId=546"
+    }
+  },
+  {
+    "events": [
+      {
+        "title": "Women in AI Meetup ",
+        "start_date_time": "2026-08-29T10:00:00+05:30",
+        "venue": "91springboard Kondapur",
+        "group_name": "Agentic AI Community Hyderabad"
+      }
+    ],
+    "product_page_url": "https://www.meetup.com/agentic-ai-community-hyderabad/events/316083206/",
+    "input": {
+      "url": "https://www.meetup.com/find/?location=in--Hyderabad&source=EVENTS&categoryId=546"
+    }
+  },
+  {
+    "events": [
+      {
+        "title": "Agentic Enterprise & AI-Driven Product Engineering",
+        "start_date_time": "2026-08-22T09:30:00+05:30",
+        "venue": "Queen's Univeristy",
+        "group_name": "AWS Community Ahmedabad"
+      }
+    ],
+    "product_page_url": "https://www.meetup.com/ahmedabad-amazon-aws-cloud-meetup/events/315480684/",
+    "input": {
+      "url": "https://www.meetup.com/find/?location=in--Ahmedabad&source=EVENTS&categoryId=546"
+    }
+  },
+  {
+    "events": [
+      {
+        "title": "The Future of Intelligent Systems",
+        "start_date_time": "2026-08-22T10:00:00+05:30",
+        "venue": "DevX",
+        "group_name": "Indian Data Club"
+      }
+    ],
+    "product_page_url": "https://www.meetup.com/indian-data-club/events/315972078/",
+    "input": {
+      "url": "https://www.meetup.com/find/?location=in--Hyderabad&source=EVENTS&categoryId=546"
+    }
+  },
+  {
+    "events": [
+      {
+        "title": "AWS STUDENT BUILDER GROUP LAUNCH 2026",
+        "start_date_time": "2026-08-27T11:00:00+05:30",
+        "venue": "Shyama Prasad Mukherjee Auditorium",
+        "group_name": "AWS SBG at Gujarat University"
+      }
+    ],
+    "product_page_url": "https://www.meetup.com/aws-sbg-at-gujarat-university/events/315784958/",
+    "input": {
+      "url": "https://www.meetup.com/find/?location=in--Ahmedabad&source=EVENTS&categoryId=546"
+    }
+  },
+  {
+    "events": [
+      {
+        "title": "Engineering Beyond the Broker: Solving Operational Challenges using Kafka",
+        "start_date_time": "2026-09-05T09:30:00+05:30",
+        "venue": "CIE at IIIT Hyderabad",
+        "group_name": "DevDay Hyderabad"
+      }
+    ],
+    "product_page_url": "https://www.meetup.com/devday_hyderabad/events/316070554/",
+    "input": {
+      "url": "https://www.meetup.com/find/?location=in--Hyderabad&source=EVENTS&categoryId=546"
+    }
+  },
+  {
+    "events": [
+      {
+        "title": "Dev Days | Ahmedabad",
+        "start_date_time": "2026-09-12T10:00:00+05:30",
+        "venue": "Rysun Labs Private Limited",
+        "group_name": "M365 Ahmedabad User Group"
+      }
+    ],
+    "product_page_url": "https://www.meetup.com/m365ahmedabad/events/315976160/",
+    "input": {
+      "url": "https://www.meetup.com/find/?location=in--Ahmedabad&source=EVENTS&categoryId=546"
+    }
+  },
+  {
+    "events": [
+      {
+        "title": "GTM and distribution for startups : Ahmedabad edition",
+        "start_date_time": "2026-08-22T11:00:00+05:30",
+        "venue": "DevX Sindhu Bhavan Road",
+        "group_name": "eChai Ahmedabad Startup Network"
+      }
+    ],
+    "product_page_url": "https://www.meetup.com/startupahmedabad/events/316158524/",
+    "input": {
+      "url": "https://www.meetup.com/find/?location=in--Ahmedabad&source=EVENTS&categoryId=546"
+    }
+  },
+  {
+    "events": [
+      {
+        "title": "HydPy August Meetup | August -2026",
+        "start_date_time": "2026-08-29T09:00:00+05:30",
+        "venue": "Online",
+        "group_name": "Hyderabad Python User Group"
+      }
+    ],
+    "product_page_url": "https://www.meetup.com/hydpygroup/events/316056355/",
+    "input": {
+      "url": "https://www.meetup.com/find/?location=in--Hyderabad&source=EVENTS&categoryId=546"
+    }
+  },
+  {
+    "events": [
+      {
+        "title": "🐳 Docker Ahmedabad Meetup - August Edition! 🐳",
+        "start_date_time": "2026-08-22T10:00:00+05:30",
+        "venue": "The Intellify",
+        "group_name": "Docker Ahmedabad"
+      }
+    ],
+    "product_page_url": "https://www.meetup.com/docker-ahmedabad/events/316100273/",
+    "input": {
+      "url": "https://www.meetup.com/find/?location=in--Ahmedabad&source=EVENTS&categoryId=546"
+    }
+  },
+  {
+    "events": [
+      {
+        "title": "KCD Gujarat 2026",
+        "start_date_time": "2026-09-19T08:08:00+05:30",
+        "venue": "Online",
+        "group_name": "Kubernetes and Cloud Native Computing Ahmedabad"
+      }
+    ],
+    "product_page_url": "https://www.meetup.com/kubernetes-ahmedabad/events/315542604/",
+    "input": {
+      "url": "https://www.meetup.com/find/?location=in--Ahmedabad&source=EVENTS&categoryId=546"
+    }
+  },
+  {
+    "events": [
+      {
+        "title": "Tech Project",
+        "start_date_time": "2026-08-22T11:00:00+05:30",
+        "venue": "Online",
+        "group_name": "T-Square"
+      }
+    ],
+    "product_page_url": "https://www.meetup.com/technology-square/events/zhmbppyjclbdc/",
+    "input": {
+      "url": "https://www.meetup.com/find/?location=in--Mumbai&source=EVENTS&categoryId=546"
+    }
+  },
+  {
+    "events": [
+      {
+        "title": "Apache Kafka® Meetup Mumbai- Aug 2026",
+        "start_date_time": "2026-08-23T11:00:00+05:30",
+        "venue": "DevX",
+        "group_name": "Mumbai Apache Kafka® Meetup by Confluent"
+      }
+    ],
+    "product_page_url": "https://www.meetup.com/mumbai-kafka/events/315972561/",
+    "input": {
+      "url": "https://www.meetup.com/find/?location=in--Mumbai&source=EVENTS&categoryId=546"
+    }
+  },
+  {
+    "events": [
+      {
+        "title": "MumbAI AI Saturdays—Get Funded to Co-Work @Adani Inspire BKC, BHIVE",
+        "start_date_time": "2026-08-22T18:00:00+05:30",
+        "venue": "BHIVE Adani Inspire BKC",
+        "group_name": "MumbAI AI"
+      }
+    ],
+    "product_page_url": "https://www.meetup.com/mumbai-ai/events/fdknztyjclbdc/",
+    "input": {
+      "url": "https://www.meetup.com/find/?location=in--Mumbai&source=EVENTS&categoryId=546"
+    }
+  },
+  {
+    "events": [
+      {
+        "title": "Building Open Source AI: Intro to Goose, GDK & more | Bitshala x AAIF | Delhi",
+        "start_date_time": "2026-08-22T11:00:00+05:30",
+        "venue": "Third Place | Business & Co-Working Cafe in South Delhi",
+        "group_name": "Bitshala"
+      }
+    ],
+    "product_page_url": "https://www.meetup.com/bitshala/events/316164910/",
+    "input": {
+      "url": "https://www.meetup.com/find/?location=in--Delhi&source=EVENTS&categoryId=546"
+    }
+  },
+  {
+    "events": [
+      {
+        "title": "Primewise Founders Club Networking Event- Delhi (Online)",
+        "start_date_time": "2026-08-22T12:00:00+05:30",
+        "venue": "Delhi",
+        "group_name": "Primewise Founders Club"
+      }
+    ],
+    "product_page_url": "https://www.meetup.com/primewise-founders-club-delhi/events/316040724/",
+    "input": {
+      "url": "https://www.meetup.com/find/?location=in--Delhi&source=EVENTS&categoryId=546"
+    }
+  },
+  {
+    "events": [
+      {
+        "title": "Kube x Agentic AI | Grafana Delhi NCR",
+        "start_date_time": "2026-08-22T09:30:00+05:30",
+        "venue": "Microsoft India Pvt Ltd",
+        "group_name": "Grafana & Friends Delhi NCR"
+      }
+    ],
+    "product_page_url": "https://www.meetup.com/grafana-friends-delhi/events/315910156/",
+    "input": {
+      "url": "https://www.meetup.com/find/?location=in--Delhi&source=EVENTS&categoryId=546"
+    }
+  },
+  {
+    "events": [
+      {
+        "title": "AWS Cloud & DSA Coding Challenge 2026",
+        "start_date_time": "2026-09-09T09:30:00+05:30",
+        "venue": "IEC College of Engineering and Technology",
+        "group_name": "AWS SBG at IEC College of Engineering and Technology"
+      }
+    ],
+    "product_page_url": "https://www.meetup.com/aws-sbg-at-iec-college-of-engineering-technology/events/316111823/",
+    "input": {
+      "url": "https://www.meetup.com/find/?location=in--Delhi&source=EVENTS&categoryId=546"
+    }
+  },
+  {
+    "events": [
+      {
+        "title": "BrowserStack QA Meetup - Noida (Sept 12)",
+        "start_date_time": "2026-09-12T11:00:00+05:30",
+        "venue": "SDET Tech Office",
+        "group_name": "BrowserStack Meetup Group - Delhi - NCR"
+      }
+    ],
+    "product_page_url": "https://www.meetup.com/browserstack-meetup-group-delhi/events/316068352/",
+    "input": {
+      "url": "https://www.meetup.com/find/?location=in--Delhi&source=EVENTS&categoryId=546"
+    }
+  },
+  {
+    "events": [
+      {
+        "title": "Building Production -Ready Agentic AI Systems",
+        "start_date_time": "2026-08-23T10:00:00+05:30",
+        "venue": "Essentia.dev",
+        "group_name": "Indian Data Club"
+      }
+    ],
+    "product_page_url": "https://www.meetup.com/indian-data-club/events/316081676/",
+    "input": {
+      "url": "https://www.meetup.com/find/?location=in--Delhi&source=EVENTS&categoryId=546"
+    }
+  },
+  {
+    "events": [
+      {
+        "title": "How to Improve Relationships with Others.",
+        "start_date_time": "2026-08-22T11:00:00+05:30",
+        "venue": "Scientology Delhi",
+        "group_name": "Delhi Scientology Events"
+      }
+    ],
+    "product_page_url": "https://www.meetup.com/scientologydelhievents/events/xnkmztyjclbdc/",
+    "input": {
+      "url": "https://www.meetup.com/find/?location=in--Delhi&source=EVENTS&categoryId=546"
     }
   }
 ]

@@ -5,6 +5,20 @@ COLLECTORS = {
         'target_url': 'https://devpost.com/hackathons',
         'sample_file': 'devpost_sample.json',
     },
+    'devpost_online': {
+        'api_url': 'https://devpost.com/api/hackathons',
+        'api_params': {'challenge_type': 'online', 'status': 'open'},
+        'api_params_upcoming': {'challenge_type': 'online', 'status': 'upcoming'},
+        'name': 'devpost-online-hackathons',
+        'sample_file': 'devpost_online_sample.json',
+    },
+    'devpost_india': {
+        'api_url': 'https://devpost.com/api/hackathons',
+        'api_params': {'challenge_type': 'in-person', 'search': 'india', 'status': 'open'},
+        'api_params_upcoming': {'challenge_type': 'in-person', 'search': 'india', 'status': 'upcoming'},
+        'name': 'devpost-india-hackathons',
+        'sample_file': 'devpost_india_sample.json',
+    },
     'luma': {
         'collector_id': 'c_mt09dzgd2mai4o8bhu',
         'name': 'luma-tech-categories',

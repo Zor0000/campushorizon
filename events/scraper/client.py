@@ -103,10 +103,47 @@ def fetch_dataset(collection_id, token=None):
     return resp.json()
 
 
+def collect_devpost_api(source):
+    """Collect Devpost hackathons via their public JSON API (no auth required).
+    Returns a list of records compatible with the normalizer.
+    """
+    info = COLLECTORS[source]
+    api_url = info['api_url']
+    all_hackathons = []
+
+    for params_key in ('api_params', 'api_params_upcoming'):
+        params = info.get(params_key, {})
+        page = 1
+        while True:
+            resp = requests.get(api_url, params={**params, 'page': page}, timeout=30)
+            if resp.status_code != 200:
+                raise BDAPIError(resp.status_code, f'Devpost API error: {resp.text[:200]}')
+            data = resp.json()
+            hackathons = data.get('hackathons', [])
+            if not hackathons:
+                break
+            for h in hackathons:
+                h['_query_type'] = params.get('challenge_type', 'online')
+            all_hackathons.extend(hackathons)
+            meta = data.get('meta', {})
+            total = meta.get('total_count', 0)
+            per_page = meta.get('per_page', 9)
+            if page * per_page >= total:
+                break
+            page += 1
+            time.sleep(0.5)
+
+    return [{'hackathons': all_hackathons, 'product_page_url': api_url}]
+
+
 def collect_source(source, token=None, timeout=1500, poll_interval=30):
     if source not in COLLECTORS:
         raise ValueError(f'Unknown source: {source}')
     info = COLLECTORS[source]
+
+    if 'api_url' in info:
+        return collect_devpost_api(source)
+
     collection_id = trigger_collector(info['collector_id'], info['target_url'], token=token)
 
     deadline = time.monotonic() + timeout

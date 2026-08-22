@@ -155,8 +155,24 @@ def _format_prize(prize):
         return ''
 
 
+def _clean_devpost_prize(raw_prize):
+    """Clean Devpost API prize string like '$<span data-currency-value>740,000</span>' → '$740,000 USD'."""
+    if not raw_prize:
+        return ''
+    cleaned = re.sub(r'<[^>]+>', '', str(raw_prize)).strip()
+    if not cleaned or cleaned == '$0':
+        return ''
+    if cleaned.startswith('$'):
+        return f'{cleaned} USD'
+    if cleaned.startswith('₹'):
+        return f'{cleaned} INR'
+    return cleaned
+
+
 def normalize_devpost(raw_data):
-    """Devpost returns either a flat list of hackathons or a list of pages with 'hackathons' keys."""
+    """Devpost returns either a flat list of hackathons or a list of pages with 'hackathons' keys.
+    Handles both Bright Data scraper format and direct API format.
+    """
     events = []
     seen = set()
 
@@ -166,17 +182,30 @@ def normalize_devpost(raw_data):
         records = raw_data
 
     for h in records:
-        url = h.get('hackathon_url', '').split('?')[0]
+        url = h.get('hackathon_url', h.get('url', '')).split('?')[0]
         if not url or url in seen:
             continue
         seen.add(url)
 
-        deadline = _parse_date_range(h.get('submission_deadline', ''))
-        prize = _format_prize(h.get('prize_amount'))
-        is_online = None
+        deadline = _parse_date_range(h.get('submission_deadline', h.get('submission_period_dates', '')))
+        prize = _format_prize(h.get('prize_amount')) or _clean_devpost_prize(h.get('prize_amount'))
+
+        tags = h.get('tags', [])
+        if not tags and 'themes' in h:
+            tags = [t.get('name', '') for t in h.get('themes', []) if t.get('name')]
+
         loc = h.get('location_type', '')
+        if not loc and 'displayed_location' in h:
+            dl = h['displayed_location']
+            loc = dl.get('location', '') if isinstance(dl, dict) else str(dl)
+
+        is_online = None
         if loc:
             is_online = 'online' in loc.lower()
+
+        event_type = h.get('_query_type', '')
+        if not event_type:
+            event_type = 'online' if is_online else 'in-person-india'
 
         events.append({
             'title': h.get('title', '').strip(),
@@ -184,9 +213,10 @@ def normalize_devpost(raw_data):
             'url': url,
             'deadline': deadline,
             'prizes': prize,
-            'tags': h.get('tags', []),
+            'tags': tags,
             'is_online': is_online,
             'location': loc,
+            'event_type': event_type,
         })
     return events
 
@@ -427,8 +457,18 @@ def normalize_meetup(raw_data):
     return events
 
 
+def normalize_devpost_online(raw_data):
+    return normalize_devpost(raw_data)
+
+
+def normalize_devpost_india(raw_data):
+    return normalize_devpost(raw_data)
+
+
 NORMALIZERS = {
     'devpost': normalize_devpost,
+    'devpost_online': normalize_devpost_online,
+    'devpost_india': normalize_devpost_india,
     'luma': normalize_luma,
     'mlh': normalize_mlh,
     'devfolio': normalize_devfolio,
