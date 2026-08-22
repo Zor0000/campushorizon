@@ -335,6 +335,72 @@ def normalize_devfolio(raw_data):
     return events
 
 
+def normalize_devfolio_api(raw_data, source_key):
+    """Normalize Devfolio GraphQL API records (open/upcoming)."""
+    events = []
+    seen = set()
+
+    for h in raw_data:
+        slug = h.get('slug', '')
+        if not slug or slug in seen:
+            continue
+        seen.add(slug)
+
+        url = f'https://{slug}.devfolio.co/'
+        deadline = _parse_iso_date(h.get('ends_at', ''))
+        reg_deadline = _parse_iso_date(
+            (h.get('settings') or {}).get('reg_ends_at', '')
+        )
+
+        is_online = h.get('is_online')
+        location = h.get('location', '') or ''
+        country = h.get('country', '') or ''
+        city = h.get('city', '') or ''
+
+        if source_key == 'devfolio_open':
+            event_type = 'online' if is_online else 'in-person-india'
+        else:
+            event_type = 'online' if is_online else 'in-person-india'
+
+        tags = [t.get('title', '') for t in (h.get('themes') or []) if t.get('title')]
+
+        participants = h.get('participants_count', 0)
+        if participants:
+            tags.append(f'{participants} participants')
+
+        team_min = h.get('team_min')
+        team_max = h.get('team_size')
+        if team_min and team_max:
+            tags.append(f'teams {team_min}-{team_max}')
+
+        title = (h.get('name') or '').strip()
+
+        events.append({
+            'title': title,
+            'source': Source.DEVFOLIO,
+            'url': url,
+            'deadline': deadline or reg_deadline,
+            'prizes': '',
+            'tags': tags,
+            'is_online': is_online,
+            'location': location,
+            'event_type': event_type,
+        })
+    return events
+
+
+def _parse_iso_date(text):
+    """Parse ISO datetime like '2026-09-13T07:30:00+00:00' → datetime."""
+    if not text:
+        return None
+    text = str(text).strip()
+    match = re.match(r'^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})', text)
+    if match:
+        yr, mo, day, hr, mn = (int(g) for g in match.groups())
+        return datetime(yr, mo, day, hr, mn, tzinfo=timezone.utc)
+    return None
+
+
 def _first(raw, *keys):
     for key in keys:
         value = raw.get(key)
@@ -361,7 +427,18 @@ def _title_from_slug(url):
     slug = url.rstrip('/').rsplit('/', 1)[-1]
     slug = re.sub(r'^\d+[-_]', '', slug)
     words = re.split(r'[-_]+', slug)
-    return ' '.join(w.capitalize() for w in words if w)
+    ACRONYMS = {'ai', 'ibm', 'amd', 'mlh', 'api', 'url', 'sql', 'ml', 'cv', 'nlp', 'llm', 'gpt', 'aws', 'gcp'}
+    result = []
+    for w in words:
+        if not w:
+            continue
+        if w.lower() in ACRONYMS:
+            result.append(w.upper())
+        elif w.isdigit():
+            result.append(w)
+        else:
+            result.append(w.capitalize())
+    return ' '.join(result)
 
 
 def normalize_lablab(raw_data):
@@ -465,6 +542,14 @@ def normalize_devpost_india(raw_data):
     return normalize_devpost(raw_data)
 
 
+def normalize_devfolio_open(raw_data):
+    return normalize_devfolio_api(raw_data, 'devfolio_open')
+
+
+def normalize_devfolio_upcoming(raw_data):
+    return normalize_devfolio_api(raw_data, 'devfolio_upcoming')
+
+
 NORMALIZERS = {
     'devpost': normalize_devpost,
     'devpost_online': normalize_devpost_online,
@@ -472,6 +557,8 @@ NORMALIZERS = {
     'luma': normalize_luma,
     'mlh': normalize_mlh,
     'devfolio': normalize_devfolio,
+    'devfolio_open': normalize_devfolio_open,
+    'devfolio_upcoming': normalize_devfolio_upcoming,
     'lablab': normalize_lablab,
     'meetup': normalize_meetup,
 }

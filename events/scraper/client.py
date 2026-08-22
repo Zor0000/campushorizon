@@ -136,12 +136,68 @@ def collect_devpost_api(source):
     return [{'hackathons': all_hackathons, 'product_page_url': api_url}]
 
 
+DEVFOLIO_GQL_FIELDS = (
+    'name slug tagline starts_at ends_at is_online '
+    'city country state location participants_count type uuid '
+    'private verified featured fellowship edition edition_name desc '
+    'apply_mode team_min team_size devfolio_official uri '
+    'settings { reg_starts_at reg_ends_at site primary_color }'
+)
+
+
+def collect_devfolio_api(source):
+    """Collect Devfolio hackathons via their public GraphQL API (no auth).
+    Uses raw GraphQL where/order_by strings from config (Hasura `now` built-in).
+    Paginates with offset (20 per page) and returns flat list of records.
+    """
+    info = COLLECTORS[source]
+    api_url = info['api_url']
+    where = info['gql_where']
+    order_by = info['gql_order_by']
+
+    all_hackathons = []
+    offset = 0
+
+    while True:
+        query = (
+            f'{{ hackathons('
+            f'where: {where}, '
+            f'limit: 20, '
+            f'offset: {offset}, '
+            f'order_by: {order_by}'
+            f') {{ {DEVFOLIO_GQL_FIELDS} }} }}'
+        )
+        resp = requests.post(
+            api_url,
+            json={'query': query},
+            headers={'Content-Type': 'application/json'},
+            timeout=30,
+        )
+        if resp.status_code != 200:
+            raise BDAPIError(resp.status_code, f'Devfolio API error: {resp.text[:200]}')
+        data = resp.json()
+        if 'errors' in data:
+            raise BDAPIError(422, f'Devfolio GraphQL error: {data["errors"][0]["message"]}')
+        hackathons = data.get('data', {}).get('hackathons', [])
+        if not hackathons:
+            break
+        all_hackathons.extend(hackathons)
+        if len(hackathons) < 20:
+            break
+        offset += 20
+        time.sleep(0.3)
+
+    return all_hackathons
+
+
 def collect_source(source, token=None, timeout=1500, poll_interval=30):
     if source not in COLLECTORS:
         raise ValueError(f'Unknown source: {source}')
     info = COLLECTORS[source]
 
     if 'api_url' in info:
+        if source.startswith('devfolio_'):
+            return collect_devfolio_api(source)
         return collect_devpost_api(source)
 
     collection_id = trigger_collector(info['collector_id'], info['target_url'], token=token)

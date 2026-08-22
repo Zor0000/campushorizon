@@ -30,6 +30,7 @@ in `tmp/`. It upserts into the `Event` model and snapshots every event into
 
 - **Hackathons** (Devpost, MLH, Devfolio, LabLab): search, online only, has
   prizes, ending soon, include ended, per-source, sort by deadline/newest.
+  LabLab is limited to URL + title (derived from slug) due to Next.js CSR.
 - **Tech Events** (Luma, Meetup): search, starting soon, include ended,
   per-source, sort. No prize/online filters — those events don't carry
   comparable prize data.
@@ -101,7 +102,7 @@ Pinned Collector IDs (reuse, never rebuild):
 | Luma     | `c_mt09dzgd2mai4o8bhu` | https://luma.com/tech | title, date, location, url |
 | MLH      | `c_mt0hfqqi1q7jk1sdbo` | https://mlh.io/events  | event_name, start_date, end_date, location, event_type, event_url |
 | Devfolio | `c_mt0y94lp18i9rcuhhv` | https://devfolio.co/hackathons | hackathon_name, submission_deadline, prize_amount, product_page_url |
-| LabLab   | `c_mt2pm82fb4ta19gqe` | https://lablab.ai/ai-hackathons | title, url, start/deadline dates, prize, format, tags |
+| LabLab   | `c_mt2pm82fb4ta19gqe` | https://lablab.ai/ai-hackathons | product_page_url, hackathon_cards (limited — Next.js CSR) |
 | Meetup   | `c_mt2qwd9216p13lefvg` | https://www.meetup.com/find/?source=EVENTS&categoryId=546 | title, start datetime, venue, online flag, group name, url |
 
 > **Meetup exception**: Meetup has a pre-built Bright Data scraper in the

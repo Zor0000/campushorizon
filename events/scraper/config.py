@@ -37,6 +37,20 @@ COLLECTORS = {
         'target_url': 'https://devfolio.co/hackathons',
         'sample_file': 'devfolio_sample.json',
     },
+    'devfolio_open': {
+        'api_url': 'https://api.devfolio.co/v1/graphql',
+        'gql_where': '{ _and: [{ private: { _eq: false } }, { settings: { reg_starts_at: { _lte: now } } }, { settings: { reg_ends_at: { _gte: now } } }] }',
+        'gql_order_by': '{ settings: { reg_ends_at: asc } }',
+        'name': 'devfolio-open',
+        'sample_file': 'devfolio_open_sample.json',
+    },
+    'devfolio_upcoming': {
+        'api_url': 'https://api.devfolio.co/v1/graphql',
+        'gql_where': '{ _and: [{ private: { _eq: false } }, { starts_at: { _gte: now } }] }',
+        'gql_order_by': '{ starts_at: asc }',
+        'name': 'devfolio-upcoming',
+        'sample_file': 'devfolio_upcoming_sample.json',
+    },
     'lablab': {
         'collector_id': 'c_mt2pm82fb4ta19gqe',
         'name': 'lablab-ai-hackathons',
@@ -53,8 +67,12 @@ COLLECTORS = {
 
 SOURCE_CATEGORIES = {
     'devpost': 'hackathon',
+    'devpost_online': 'hackathon',
+    'devpost_india': 'hackathon',
     'mlh': 'hackathon',
     'devfolio': 'hackathon',
+    'devfolio_open': 'hackathon',
+    'devfolio_upcoming': 'hackathon',
     'lablab': 'hackathon',
     'luma': 'tech_event',
     'meetup': 'tech_event',

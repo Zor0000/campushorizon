@@ -45,8 +45,17 @@ These are production endpoints. The agent must reuse them, not re-create scraper
 | Luma     | `c_mt09dzgd2mai4o8bhu` | `https://luma.com/tech` | title, date, location, url |
 | MLH      | `c_mt0hfqqi1q7jk1sdbo` | `https://mlh.io/events`  | event_name, start_date, end_date, location, event_type, event_url |
 | Devfolio | `c_mt0y94lp18i9rcuhhv` | `https://devfolio.co/hackathons` | hackathon_name, submission_deadline, prize_amount, product_page_url |
-| LabLab   | `c_mt2pm82fb4ta19gqe` | `https://lablab.ai/ai-hackathons` | title, url, start/deadline dates, prize, format, tags |
+| LabLab   | `c_mt2pm82fb4ta19gqe` | `https://lablab.ai/ai-hackathons` | product_page_url, hackathon_cards (limited — Next.js CSR) |
 | Meetup   | `c_mt2qwd9216p13lefvg` | `https://www.meetup.com/find/?source=EVENTS&categoryId=546` | title, start datetime, venue, online flag, group name, url (custom-collector exception) |
+
+### Direct API sources (no Bright Data collector — public JSON/GraphQL endpoints)
+
+| Source   | API Endpoint                              | Data                                              |
+|----------|-------------------------------------------|---------------------------------------------------|
+| Devpost Online | `https://devpost.com/api/hackathons` | title, deadline, prizes, tags, online flag (param: `challenge_type=online`) |
+| Devpost India  | `https://devpost.com/api/hackathons` | title, deadline, prizes, tags, online flag (param: `challenge_type=in-person, search=india`) |
+| Devfolio Open    | `https://api.devfolio.co/v1/graphql` | name, slug→url, deadline (ends_at/reg_ends_at), is_online, location, tags (themes, participant count) |
+| Devfolio Upcoming| `https://api.devfolio.co/v1/graphql` | same as open, filtered by `starts_at >= now` |
 
 > These IDs are live production collectors. Reuse them; only run
 > `bdata scraper create` for a brand-new target, then add its row above and to
@@ -56,10 +65,13 @@ These are production endpoints. The agent must reuse them, not re-create scraper
 > (`c_mt2nb1or1052fx65zs`) collectors were replaced via the documented
 > create-fallback after repeated heal failures left them extracting broken
 > data (detail-page timeouts / locale-drift rows). Do not reuse the dead IDs.
-> Also dead: Devfolio v1 (`c_mt0y01c02c02v5dei1`, superseded by v2) and an
-> unfinished lablab build (`c_mt2rsnuh2r56c9y6y4`, AI generation failed).
-> The CLI cannot list/rename/delete collectors — cleanup is manual in the
-> Bright Data dashboard; never delete the six pinned IDs above.
+> Also dead: Devfolio v1 (`c_mt0y01c02c02v5dei1`, superseded by v2), an
+> unfinished lablab build (`c_mt2rsnuh2r56c9y6y4`, AI generation failed),
+> and two more lablab attempts (`c_mt4j4b881xjbfic6p8`, `c_mt4j6ptm2cff1w7nw7`,
+> `c_mt4kjfok4zsbg0nbz` — all stuck in preview_picker loops or selector failures
+> due to lablab's Next.js client-side rendering). The current lablab scraper
+> (`c_mt2pm82fb4ta19gqe`) has a stuck heal job (409 conflict) but still returns
+> URLs. Titles are derived from URL slugs in the normalizer.
 
 ## Project layout
 
@@ -69,8 +81,8 @@ campushorizon/            # Django project
 events/                   # Django app
   models.py               # Event, EventSnapshot, Source
   scraper/
-    config.py             # collector IDs, target URLs, field mappings
-    client.py             # Bright Data API: POST /dca/trigger, GET /dca/dataset, POST refactor_template
+    config.py             # collector IDs, target URLs, field mappings, GraphQL queries
+    client.py             # Bright Data API + direct API collectors (Devpost JSON, Devfolio GraphQL)
     normalizer.py         # per-source raw payload → unified Event schema
     validator.py          # health rules (R0 empty, R1 zero records, R3 missing fields)
     archive.py            # raw run archive + manifests
@@ -126,3 +138,4 @@ python manage.py test events
 - DON'T use the Bright Data dashboard as a workflow step.
 - DON'T add sources without updating `config.py`, this file, and the README.
 - DO keep `client.py`'s API surface small: trigger, dataset fetch, refactor_template only.
+- DO prefer direct API over Bright Data when available (faster, no credits, richer fields).
