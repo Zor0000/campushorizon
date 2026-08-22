@@ -186,11 +186,19 @@ class ValidatorTest(TestCase):
         )
 
     def test_r0_empty_data(self):
-        with mock.patch('events.scraper.validator._load_sample', return_value=[]):
-            with mock.patch('events.scraper.validator.load_latest_raw', side_effect=FileNotFoundError):
-                issues = validate_source('devfolio')
+        with mock.patch('events.scraper.validator.load_latest_raw', return_value=('run', [])):
+            issues = validate_source('devfolio')
         self.assertTrue(any(i.rule == 'R0' for i in issues),
                         f"Expected R0, got: {[i.rule for i in issues]}")
+        self.assertTrue(all(i.healable for i in issues if i.rule == 'R0'))
+
+    def test_missing_raw_is_transient_not_healable(self):
+        with mock.patch('events.scraper.validator.load_latest_raw', side_effect=FileNotFoundError):
+            issues = validate_source('devfolio')
+        self.assertEqual(len(issues), 1)
+        self.assertEqual(issues[0].rule, 'R0')
+        self.assertFalse(issues[0].healable)
+        self.assertIn('transient', issues[0].message)
 
     def test_r1_zero_records(self):
         with mock.patch('events.scraper.validator.load_raw', return_value=EMPTY_URL_DEVFOLIO):
@@ -345,6 +353,12 @@ class CollectEventsTest(TestCase):
         call_command('collect_events', '--offline', '--dry-run')
         self.assertEqual(Event.objects.count(), initial_count)
 
+    def test_single_source_collect(self):
+        from django.core.management import call_command
+        call_command('collect_events', '--offline', '--source', 'devpost')
+        self.assertTrue(Event.objects.filter(source=Source.DEVPOST).exists())
+        self.assertFalse(Event.objects.filter(source=Source.MLH).exists())
+
     def test_online_collect_uses_live_data(self):
         from django.core.management import call_command
         from events.scraper.normalizer import _load_sample
@@ -370,17 +384,27 @@ class CollectEventsTest(TestCase):
 class HealCheckTest(TestCase):
     def test_auto_heal_triggers_for_broken_source(self):
         from django.core.management import call_command
-        with mock.patch(
-            'events.scraper.validator.load_latest_raw',
-            side_effect=FileNotFoundError,
-        ):
-            with mock.patch('events.scraper.validator._load_sample', return_value=[]):
-                with mock.patch('events.scraper.client.heal_collector', return_value=True) as heal:
-                    call_command('heal_check', '--source', 'devpost', '--auto-heal')
+        with mock.patch('events.scraper.validator.load_latest_raw', return_value=('run', [])):
+            with mock.patch('events.scraper.client.heal_collector', return_value=True) as heal:
+                call_command('heal_check', '--source', 'devpost', '--auto-heal')
         heal.assert_called_once()
         args, _kwargs = heal.call_args
         self.assertEqual(args[0], COLLECTORS['devpost']['collector_id'])
         self.assertIn('devpost', args[1])
+
+    def test_auto_heal_skips_transient_missing_raw(self):
+        from django.core.management import call_command
+        with mock.patch('events.scraper.validator.load_latest_raw', side_effect=FileNotFoundError):
+            with mock.patch('events.scraper.client.heal_collector', return_value=True) as heal:
+                call_command('heal_check', '--source', 'devpost', '--auto-heal')
+        heal.assert_not_called()
+
+    def test_auto_heal_skips_api_sources(self):
+        from django.core.management import call_command
+        with mock.patch('events.scraper.validator.load_latest_raw', return_value=('run', [])):
+            with mock.patch('events.scraper.client.heal_collector', return_value=True) as heal:
+                call_command('heal_check', '--source', 'devpost_online', '--auto-heal')
+        heal.assert_not_called()
 
     def test_auto_heal_skips_healthy_sources(self):
         from django.core.management import call_command
@@ -395,9 +419,8 @@ class HealCheckTest(TestCase):
             'events.scraper.validator.load_latest_raw',
             side_effect=FileNotFoundError,
         ):
-            with mock.patch('events.scraper.validator._load_sample', return_value=[]):
-                with self.assertRaises(CommandError) as ctx:
-                    call_command('heal_check', '--source', 'devpost', '--exit-code')
+            with self.assertRaises(CommandError) as ctx:
+                call_command('heal_check', '--source', 'devpost', '--exit-code')
         self.assertEqual(ctx.exception.returncode, 1)
 
 

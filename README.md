@@ -46,6 +46,7 @@ Bright Data API token it triggers the real collectors and imports fresh data:
 cp .env.example .env          # then paste your token from
                               # https://brightdata.com/cp/setting → API Tokens
 python manage.py collect_events --online   # trigger → poll → upsert + snapshot
+python manage.py collect_events --online --source devpost   # one source only
 python manage.py heal_check --auto-heal    # detect breakage, auto-trigger heal
 ```
 
@@ -53,13 +54,23 @@ python manage.py heal_check --auto-heal    # detect breakage, auto-trigger heal
   `GET /dca/dataset` (30s interval, 25 min timeout per collector, configurable
   with `--poll-timeout`), archives raw payloads to `raw/<run_id>` (manifest
   `mode: online`), then normalizes + upserts as usual.
+- `--source <name>` collects a single source — use it to verify a source right
+  after approving its heal instead of waiting for the nightly run.
 - `heal_check --auto-heal` calls the same self-healing endpoint the CLI uses
-  (`POST /dca/collectors/{id}/refactor_template`) for any source with ERROR
-  issues. **Approval stays manual**: `npx -p @brightdata/cli bdata scraper approve <COLLECTOR_ID>`.
-- GitHub Actions runs this nightly (`.github/workflows/collect.yml`, 06:00 UTC)
-  and on demand via **Actions → Collect → Run workflow**. Add the token as a
-  repo secret named `BRIGHT_DATA_API_TOKEN`. Fresh payloads are uploaded as the
-  `raw-runs` artifact on every run.
+  (`POST /dca/collectors/{id}/refactor_template`), but only for genuine
+  breakage: a collection that *succeeded* yet returned an empty payload (R0)
+  or 0 records (R1). Transient failures (timeout, network, no run data) are
+  never healed — the fix there is re-collecting, and direct-API sources have
+  no collector to heal. **Approval stays manual**:
+  `npx -p @brightdata/cli bdata scraper approve <COLLECTOR_ID>`.
+- GitHub Actions (`.github/workflows/collect.yml`) runs nightly at 20:30 UTC
+  (02:00 IST) and on demand via **Actions → Collect → Run workflow** (optional
+  `source` input collects one source). Add the token as a repo secret named
+  `BRIGHT_DATA_API_TOKEN`. Every run writes a job summary with the health
+  report and ready-to-paste heal/approve commands, uploads fresh payloads as
+  the `raw-runs` artifact, and **commits `db.sqlite3` + `raw/` back to main**
+  — so a fresh clone ships a populated dashboard and run history, and R2/R4
+  trend rules can compare against yesterday's data.
 
 ## Architecture
 
@@ -82,7 +93,8 @@ tmp/*.json                # sample payloads (committed for offline repro)
 .env.example              # BRIGHT_DATA_API_TOKEN template (real .env is gitignored)
 .github/workflows/
   ci.yml                  # tests on push — judge can clone and run
-  collect.yml             # nightly live collection + auto-heal + raw artifact
+  collect.yml             # nightly collection (02:00 IST) + auto-heal + job summary; commits db back to main
+db.sqlite3                # committed by CI so the repo ships a populated dashboard
 ```
 
 ## Bright Data CLI (the source of truth)
@@ -117,11 +129,13 @@ for how each collector was built and healed.
 
 1. Site changes layout → collector returns empty/missing fields.
 2. Run `python manage.py heal_check` to confirm the breakage (in cron, add
-   `--auto-heal` to trigger the heal API automatically).
+   `--auto-heal` to trigger the heal API automatically — only for genuine
+   breakage; timeouts/missing runs are transient and just get re-collected).
 3. `bdata scraper heal <COLLECTOR_ID> "<plain-language description of what broke>"`
 4. `bdata scraper approve <COLLECTOR_ID>`
-5. Re-run `python manage.py collect_events --online` → dashboard recovers.
-   Same Collector ID, no code change downstream.
+5. Re-run `python manage.py collect_events --online --source <source>` (or
+   dispatch the Collect workflow with that source) → dashboard recovers in
+   minutes. Same Collector ID, no code change downstream.
 
 ## Env vars
 

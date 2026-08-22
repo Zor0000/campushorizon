@@ -93,7 +93,8 @@ events/                   # Django app
 static/                   # Tailwind + Chart.js assets
 .github/workflows/
   ci.yml                  # tests on push
-  collect.yml             # nightly live collection + auto-heal + raw artifact
+  collect.yml             # nightly live collection (02:00 IST) + auto-heal + job summary;
+                          # commits db.sqlite3 + raw/ back to main; dispatch input `source` re-collects one source
 .env.example              # template; real .env stays gitignored
 README.md
 ```
@@ -104,6 +105,7 @@ README.md
 python manage.py runserver
 python manage.py collect_events               # offline from tmp/ samples (default)
 python manage.py collect_events --online      # trigger live collectors via API (needs BRIGHT_DATA_API_TOKEN)
+python manage.py collect_events --online --source devpost   # re-collect one source (e.g. after approving a heal)
 python manage.py heal_check                   # detect stale/empty extraction
 python manage.py heal_check --auto-heal       # + trigger heal API for broken sources (approve still via CLI)
 python manage.py test events
@@ -123,10 +125,16 @@ python manage.py test events
 
 1. Site changes layout → collector returns empty/missing fields.
 2. Run `heal_check` or inspect run output to confirm the breakage.
+   Transient failures (timeout, network, no run data) are never auto-healed —
+   healing regenerates the template, it cannot fix a queue. Auto-heal fires
+   only when a collection *succeeded* but the payload is empty (R0) or yields
+   0 records (R1). Direct-API sources have no collector to heal.
 3. Trigger the heal — CLI (interactive) or `heal_check --auto-heal` (cron/API):
    `bdata scraper heal <COLLECTOR_ID> "<plain-language description of what broke>"`
 4. `bdata scraper approve <COLLECTOR_ID>` — approval is always manual, even after an auto-heal.
-5. Re-run `collect_events --online` → dashboard recovers. Same Collector ID, no code change downstream.
+5. Re-run `collect_events --online --source <source>` (or dispatch the Collect
+   workflow with that source) → dashboard recovers in minutes. Same Collector
+   ID, no code change downstream.
 6. If heal can't fix it, fall back to `bdata scraper create` and update `config.py` + this file.
 
 ## Do / Don't
@@ -138,4 +146,9 @@ python manage.py test events
 - DON'T use the Bright Data dashboard as a workflow step.
 - DON'T add sources without updating `config.py`, this file, and the README.
 - DO keep `client.py`'s API surface small: trigger, dataset fetch, refactor_template only.
-- DO prefer direct API over Bright Data when available (faster, no credits, richer fields).
+- DO use Bright Data collectors as the primary ingestion engine. Fall back to
+  a site's own public API only when a collector structurally cannot get the
+  data — e.g. query-param filtering the collector ignores (Devpost online /
+  India slices) or server-side fields the page never renders (Devfolio
+  GraphQL's `is_online`, exact timestamps, participant counts). Document the
+  reason alongside the source; both paths feed the same normalizer.

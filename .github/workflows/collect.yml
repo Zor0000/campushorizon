@@ -2,14 +2,29 @@ name: Collect
 
 on:
   schedule:
-    - cron: "0 6 * * *"
+    - cron: "30 20 * * *" # 20:30 UTC = 02:00 IST — fresh data + health report waiting in the morning
   workflow_dispatch:
+    inputs:
+      source:
+        description: "Single source to collect (e.g. devpost). Empty = all sources."
+        required: false
+        default: ""
+
+permissions:
+  contents: write
+
+concurrency:
+  group: collect
+  cancel-in-progress: false
 
 jobs:
   collect:
     runs-on: ubuntu-latest
+    timeout-minutes: 180
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - uses: actions/setup-python@v5
         with:
@@ -21,18 +36,37 @@ jobs:
       - name: Migrate
         run: python manage.py migrate
 
-      - name: Collect events from live collectors
-        run: python manage.py collect_events --online
+      - name: Collect events
+        run: >
+          python manage.py collect_events --online --poll-timeout 30
+          ${{ inputs.source && format('--source {0}', inputs.source) || '' }}
         env:
           BRIGHT_DATA_API_TOKEN: ${{ secrets.BRIGHT_DATA_API_TOKEN }}
 
       - name: Health check with auto-heal
-        run: python manage.py heal_check --auto-heal --exit-code
+        if: ${{ !cancelled() }}
+        run: |
+          set -o pipefail
+          python manage.py heal_check --auto-heal --exit-code 2>&1 | tee health.txt
         env:
           BRIGHT_DATA_API_TOKEN: ${{ secrets.BRIGHT_DATA_API_TOKEN }}
 
-      - name: Upload fresh raw payloads
-        if: always()
+      - name: Job summary (health report + heal/approve commands)
+        if: ${{ !cancelled() }}
+        run: cat health.txt >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Persist collected data (db) back to main
+        if: ${{ !cancelled() }}
+        run: |
+          git config user.name "collect-bot"
+          git config user.email "actions@github.com"
+          git add db.sqlite3
+          git commit -m "chore: collect $(date -u +%F)" || echo "nothing new to commit"
+          git pull --rebase --autostash origin main
+          git push
+
+      - name: Upload raw payloads
+        if: ${{ !cancelled() }}
         uses: actions/upload-artifact@v4
         with:
           name: raw-runs

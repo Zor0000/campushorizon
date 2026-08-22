@@ -1,5 +1,5 @@
-from events.scraper.config import COLLECTORS, SOURCE_CATEGORIES
-from events.scraper.normalizer import NORMALIZERS, _load_sample
+from events.scraper.config import COLLECTORS
+from events.scraper.normalizer import NORMALIZERS
 from events.scraper.archive import load_latest_raw, load_raw
 from events.models import Event, Source
 
@@ -8,11 +8,12 @@ REQUIRED_FIELDS = {'title', 'url'}
 
 
 class Issue:
-    def __init__(self, severity, rule, message, heal_command=None):
+    def __init__(self, severity, rule, message, heal_command=None, healable=False):
         self.severity = severity
         self.rule = rule
         self.message = message
         self.heal_command = heal_command
+        self.healable = healable
 
     def __str__(self):
         icon = 'ERROR' if self.severity == 'error' else 'WARNING'
@@ -22,11 +23,29 @@ class Issue:
         return parts
 
 
+def _no_raw_issue(source, run_id=None):
+    where = f'run {run_id}' if run_id else 'any archived run'
+    return Issue(
+        'error', 'R0',
+        f'{source}: no raw data in {where} — collection failed or never ran '
+        '(transient, not a template break)',
+        f'python manage.py collect_events --online --source {source}',
+    )
+
+
 def _check_rule_r0(source, raw_data):
     if not raw_data:
-        target_url = COLLECTORS[source].get('target_url') or COLLECTORS[source].get('api_url', '')
-        return [Issue('error', 'R0', f'{source}: raw data is empty',
-                      f'bdata scraper create {target_url} "..."')]
+        collector_id = COLLECTORS[source].get('collector_id')
+        if collector_id:
+            return [Issue(
+                'error', 'R0', f'{source}: raw data is empty',
+                f'npx -p @brightdata/cli bdata scraper heal {collector_id} "extraction returned an empty payload - likely layout change"',
+                healable=True,
+            )]
+        return [Issue(
+            'error', 'R0', f'{source}: raw data is empty',
+            f'Check the API response shape for {source} in client.py/config.py',
+        )]
     return []
 
 
@@ -36,10 +55,15 @@ def _check_rule_r1(source, raw_data):
     if len(normalized) == 0:
         collector_id = COLLECTORS[source].get('collector_id')
         if collector_id:
-            fix = f'npx -p @brightdata/cli bdata scraper heal {collector_id} "extraction returned 0 records - likely layout change"'
-        else:
-            fix = f'Check API endpoint or sample file for {source}'
-        return [Issue('error', 'R1', f'{source}: 0 records extracted from valid data', fix)]
+            return [Issue(
+                'error', 'R1', f'{source}: 0 records extracted from valid data',
+                f'npx -p @brightdata/cli bdata scraper heal {collector_id} "extraction returned 0 records - likely layout change"',
+                healable=True,
+            )]
+        return [Issue(
+            'error', 'R1', f'{source}: 0 records extracted from valid data',
+            f'Check the API response shape for {source} in client.py/config.py',
+        )]
     return []
 
 
@@ -106,13 +130,13 @@ def _check_rule_r4(source, raw_data):
 
 
 def validate_source(source, run_id=None):
-    if run_id:
-        raw = load_raw(run_id, source)
-    else:
-        try:
+    try:
+        if run_id:
+            raw = load_raw(run_id, source)
+        else:
             _, raw = load_latest_raw(source)
-        except FileNotFoundError:
-            raw = _load_sample(source)
+    except FileNotFoundError:
+        return [_no_raw_issue(source, run_id)]
 
     issues = []
     issues.extend(_check_rule_r0(source, raw))
@@ -131,11 +155,4 @@ def validate_source(source, run_id=None):
 
 
 def validate_all(run_id=None):
-    results = {}
-    for source in COLLECTORS:
-        try:
-            issues = validate_source(source, run_id=run_id)
-            results[source] = issues
-        except FileNotFoundError as e:
-            results[source] = [Issue('error', 'R0', str(e))]
-    return results
+    return {source: validate_source(source, run_id=run_id) for source in COLLECTORS}

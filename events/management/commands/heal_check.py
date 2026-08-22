@@ -65,7 +65,7 @@ class Command(BaseCommand):
                 self.stdout.write(str(issue))
 
             if auto_heal and errors:
-                self._trigger_heal(src, collector_id, target_url, errors[0])
+                self._maybe_heal(src, collector_id, target_url, errors)
 
         self.stdout.write('')
         if total_errors > 0:
@@ -83,6 +83,20 @@ class Command(BaseCommand):
             ))
         else:
             self.stdout.write(self.style.SUCCESS('ALL OK — all sources healthy'))
+
+    def _maybe_heal(self, source, collector_id, target_url, errors):
+        if not collector_id:
+            self.stdout.write(self.style.WARNING(
+                f'\n  [HEAL] Skipped for {source}: direct-API source has no collector; fix in client.py/config.py'
+            ))
+            return
+        healable = [i for i in errors if i.healable]
+        if not healable:
+            self.stdout.write(self.style.WARNING(
+                f'\n  [HEAL] Skipped for {source}: errors are transient (collection failed), not a template break'
+            ))
+            return
+        self._trigger_heal(source, collector_id, target_url, healable[0])
 
     def _trigger_heal(self, source, collector_id, target_url, issue):
         prompt = (

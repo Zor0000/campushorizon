@@ -33,6 +33,10 @@ class Command(BaseCommand):
             help='Number of raw runs to retain (default: 20)',
         )
         parser.add_argument(
+            '--source', type=str, default=None,
+            help='Collect a single source only, e.g. devpost (default: all sources)',
+        )
+        parser.add_argument(
             '--poll-timeout', type=int, default=25,
             help='Minutes to wait per collector before failing (online mode, default: 25)',
         )
@@ -42,6 +46,12 @@ class Command(BaseCommand):
         keep_runs = options['keep_runs']
         online = options['online']
         poll_timeout = options['poll_timeout'] * 60
+        only_source = options['source']
+
+        if only_source and only_source not in COLLECTORS:
+            self.stderr.write(f'Unknown source: {only_source}. Choose from: {", ".join(COLLECTORS)}')
+            return
+        sources = [only_source] if only_source else list(COLLECTORS)
 
         if online and options['offline']:
             self.stderr.write('Use either --online or --offline, not both.')
@@ -54,7 +64,7 @@ class Command(BaseCommand):
             client.load_env()
             self.stdout.write('Triggering live collectors...')
             failures = []
-            for source in COLLECTORS:
+            for source in sources:
                 try:
                     raw = client.collect_source(source, timeout=poll_timeout)
                     raw_by_source[source] = raw
@@ -82,7 +92,7 @@ class Command(BaseCommand):
                     returncode=1,
                 )
         else:
-            for source in COLLECTORS:
+            for source in sources:
                 raw_by_source[source] = _load_sample(source)
             if not dry_run:
                 for source, raw in raw_by_source.items():
