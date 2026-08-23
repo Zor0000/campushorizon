@@ -122,7 +122,7 @@ Pinned Collector IDs (reuse, never rebuild):
 > for field control (title, start datetime, venue, online flag, group name,
 > url). All other sources are long-tail targets with no pre-built scraper.
 
-See `SCRAPER_1_DEVPOST.md` … `SCRAPER_4_DEVFOLIO.md` and `SCRAPER_SETUP.md`
+See `SCRAPER_1_DEVPOST.md` … `SCRAPER_6_MEETUP.md` and `SCRAPER_SETUP.md`
 for how each collector was built and healed.
 
 ## Self-healing workflow (the hero demo)
