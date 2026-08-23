@@ -15,15 +15,13 @@ SECRET_KEY = os.environ.get(
 
 DEBUG = os.environ.get('DJANGO_DEBUG', 'true').lower() == 'true'
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'testserver']
-# Railway injects this automatically — no manual config needed
-_railway_domain = os.environ.get('RAILWAY_PUBLIC_DOMAIN', '')
-if _railway_domain:
-    ALLOWED_HOSTS.append(_railway_domain)
-# Any extra custom domains (comma-separated)
-_extra_hosts = os.environ.get('DJANGO_ALLOWED_HOSTS', '')
-if _extra_hosts:
-    ALLOWED_HOSTS += [h.strip() for h in _extra_hosts.split(',') if h.strip()]
+# Allow all hosts by default (handles Railway internal healthchecks, proxy, and *.up.railway.app)
+ALLOWED_HOSTS = [h.strip() for h in os.environ.get('DJANGO_ALLOWED_HOSTS', '*').split(',') if h.strip()]
+
+CSRF_TRUSTED_ORIGINS = [
+    'https://*.railway.app',
+    'https://*.up.railway.app',
+]
 
 
 # Application definition
