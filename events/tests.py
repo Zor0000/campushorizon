@@ -529,3 +529,19 @@ class ViewTest(TestCase):
         resp = self.client.get('/')
         content = resp.content.decode()
         self.assertIn('events', content.lower())
+
+    def test_landing_ending_week_count_matches_hackathon_preview(self):
+        from datetime import timedelta
+        from django.utils import timezone
+        from events.views import HACKATHON_SOURCES
+
+        now = timezone.now()
+        week_ahead = now + timedelta(days=7)
+        expected = Event.objects.filter(
+            source__in=HACKATHON_SOURCES,
+            deadline__gte=now,
+            deadline__lte=week_ahead,
+        ).count()
+
+        resp = self.client.get('/')
+        self.assertEqual(resp.context['ending_week_count'], expected)

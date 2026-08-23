@@ -1,7 +1,11 @@
+from datetime import timedelta
+
 from django import template
 from django.utils import timezone
 
 register = template.Library()
+
+RECENT_WINDOW_HOURS = 36
 
 SOURCE_COLORS = {
     'devpost': {'bg': 'bg-indigo-500/20', 'text': 'text-indigo-300', 'border': 'border-indigo-500/30', 'label': 'Devpost'},
@@ -78,3 +82,11 @@ def format_prize(prizes):
 @register.filter
 def stagger_delay(index):
     return f'{min(index * 0.04, 0.4):.2f}s'
+
+
+@register.filter
+def is_recent(event):
+    if not getattr(event, 'created_at', None):
+        return False
+    cutoff = timezone.now() - timedelta(hours=RECENT_WINDOW_HOURS)
+    return event.created_at >= cutoff

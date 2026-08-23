@@ -3,9 +3,16 @@
 {% with badge_class=event.deadline|deadline_badge_class badge_text=event|deadline_badge_text %}
 <article class="group relative rounded-2xl border border-white/10 bg-white/[0.02] p-5 transition-all duration-300 card-hover hover:bg-white/[0.04]">
     <div class="flex items-center justify-between mb-3">
-        <span class="inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-medium border {{ sc.bg }} {{ sc.text }} {{ sc.border }}">
-            {{ sc.label }}
-        </span>
+        <div class="flex items-center gap-2">
+            <span class="inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-medium border {{ sc.bg }} {{ sc.text }} {{ sc.border }}">
+                {{ sc.label }}
+            </span>
+            {% if event|is_recent %}
+            <span class="inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-medium border bg-emerald-500/15 text-emerald-300 border-emerald-500/30">
+                New
+            </span>
+            {% endif %}
+        </div>
         <span class="inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-medium border {{ badge_class }}">
             {{ badge_text }}
         </span>

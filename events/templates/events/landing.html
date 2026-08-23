@@ -3,70 +3,157 @@
 
 {% block title %}CampusHorizon{% endblock %}
 
-{% block content %}
-<div class="max-w-6xl mx-auto px-6 py-20">
-    <div class="text-center mb-16">
-        <h1 class="text-4xl md:text-5xl font-bold text-white/95 mb-4 tracking-tight">
-            Never miss a hackathon.
-        </h1>
-        <p class="text-lg text-white/40 max-w-xl mx-auto">
-            Live feeds from Devpost, MLH, Devfolio, LabLab, Luma, and Meetup. Self-healing scrapers keep the data fresh.
-        </p>
-    </div>
+{% block extra_style %}
+<style>
+    .hero-glow {
+        background: radial-gradient(ellipse 60% 55% at 50% -12%, rgba(99, 102, 241, 0.16), transparent 70%);
+    }
+    .grid-pattern {
+        background-image:
+            linear-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(255, 255, 255, 0.04) 1px, transparent 1px);
+        background-size: 54px 54px;
+        -webkit-mask-image: radial-gradient(ellipse 65% 65% at 50% 0%, black 25%, transparent 78%);
+        mask-image: radial-gradient(ellipse 65% 65% at 50% 0%, black 25%, transparent 78%);
+    }
+</style>
+{% endblock %}
 
-    <div class="grid md:grid-cols-2 gap-6 max-w-3xl mx-auto">
-        <a href="{% url 'events:hackathons' %}" class="group relative block p-8 rounded-2xl border border-white/10 bg-white/[0.03] card-hover transition-all duration-300 glow-hover">
-            <div class="flex items-center gap-3 mb-4">
-                <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500/25 to-purple-600/25 flex items-center justify-center">
-                    <svg class="w-5 h-5 text-indigo-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+{% block content %}
+<div class="relative">
+    <div class="absolute inset-x-0 top-0 h-[480px] hero-glow pointer-events-none z-0"></div>
+    <div class="absolute inset-x-0 top-0 h-[520px] grid-pattern pointer-events-none z-0"></div>
+
+    <div class="relative max-w-6xl mx-auto px-6 pt-20 pb-12 z-10">
+        <div class="text-center mb-10">
+            <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-white/10 bg-white/[0.03] text-xs text-white/40 mb-7">
+                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                Live feeds &middot; self-healing scrapers
+            </div>
+            <h1 class="text-5xl md:text-6xl font-bold text-white tracking-tight mb-5 leading-[1.1]">
+                Never miss a<br class="hidden sm:block"> hackathon<span class="text-indigo-400">.</span>
+            </h1>
+            <p class="text-lg text-white/40 max-w-xl mx-auto mb-8">
+                Live feeds from Devpost, MLH, Devfolio, LabLab, Luma, and Meetup.
+                Deadlines tracked, changes detected — automatically.
+            </p>
+
+            <form action="{% url 'events:hackathons' %}" method="get" class="max-w-xl mx-auto flex gap-2 relative z-20">
+                <label for="hero-q" class="sr-only">Search hackathons</label>
+                <div class="relative flex-1">
+                    <svg class="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-white/30" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                    </svg>
+                    <input type="text" name="q" id="hero-q" placeholder='Search "AI", "India", "beginner"...'
+                           class="w-full pl-11 pr-4 py-3.5 rounded-xl border border-white/10 bg-white/[0.03] text-sm text-white/90 placeholder-white/30 focus:outline-none focus:border-indigo-500/40 focus:bg-white/[0.05] transition-colors">
+                </div>
+                <button type="submit"
+                        class="px-6 py-3.5 rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-sm font-semibold text-white transition-all shrink-0 cursor-pointer">
+                    Search
+                </button>
+            </form>
+
+            <div class="mt-5 flex items-center justify-center gap-4 text-sm relative z-20">
+                <a href="{% url 'events:hackathons' %}"
+                   class="inline-flex items-center gap-1.5 px-6 py-3 rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-sm font-semibold text-white transition-all cursor-pointer">
+                    Browse hackathons
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
+                    </svg>
+                </a>
+                <a href="{% url 'events:tech_events' %}"
+                   class="inline-flex items-center gap-1.5 px-6 py-3 rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-sm font-semibold text-white transition-all cursor-pointer">
+                    Tech events
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
+                    </svg>
+                </a>
+            </div>
+        </div>
+
+        <div class="rounded-2xl border border-white/10 bg-white/[0.02] overflow-hidden">
+            <div class="grid grid-cols-2 md:grid-cols-4 divide-x divide-y md:divide-y-0 divide-white/5">
+                <div class="px-6 py-5 text-center">
+                    <div class="text-2xl font-bold text-white/95">{{ total_count }}</div>
+                    <div class="text-xs text-white/35 mt-1 uppercase tracking-wider">Events tracked</div>
+                </div>
+                <div class="px-6 py-5 text-center">
+                    <div class="text-2xl font-bold text-white/95">{{ source_count }}</div>
+                    <div class="text-xs text-white/35 mt-1 uppercase tracking-wider">Sources</div>
+                </div>
+                <div class="px-6 py-5 text-center">
+                    <div class="text-2xl font-bold text-amber-400">{{ ending_week_count }}</div>
+                    <div class="text-xs text-white/35 mt-1 uppercase tracking-wider">Ending this week</div>
+                </div>
+                <div class="px-6 py-5 text-center">
+                    <div class="text-2xl font-bold text-emerald-400">
+                        {% if last_refreshed %}{{ last_refreshed|date:"M d" }}{% else %}&mdash;{% endif %}
+                    </div>
+                    <div class="text-xs text-white/35 mt-1 uppercase tracking-wider">Last refresh</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="mt-8 space-y-6">
+            <a href="{% url 'events:hackathons' %}" class="group relative flex items-center gap-6 p-7 rounded-2xl border border-white/10 bg-white/[0.03] card-hover transition-all duration-300 glow-hover">
+                <div class="w-12 h-12 shrink-0 rounded-xl bg-gradient-to-br from-indigo-500/25 to-purple-600/25 flex items-center justify-center">
+                    <svg class="w-6 h-6 text-indigo-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M13 10V3L4 14h7v7l9-11h-7z"/>
                     </svg>
                 </div>
-                <span class="text-xs font-medium text-white/30 uppercase tracking-wider">4 sources</span>
-            </div>
-            <h2 class="text-xl font-semibold text-white/90 mb-1">Hackathons</h2>
-            <p class="text-sm text-white/40 mb-6">
-                Devpost, MLH, Devfolio &amp; LabLab — {{ hackathon_count }} events
-            </p>
-            <div class="flex items-center gap-2">
-                <span class="text-xs text-indigo-300">Devpost</span>
-                <span class="text-white/10">&bull;</span>
-                <span class="text-xs text-indigo-300">MLH</span>
-                <span class="text-white/10">&bull;</span>
-                <span class="text-xs text-indigo-300">Devfolio</span>
-                <span class="text-white/10">&bull;</span>
-                <span class="text-xs text-indigo-300">LabLab</span>
-            </div>
-            <div class="absolute inset-0 rounded-2xl border border-transparent group-hover:border-indigo-500/25 transition-colors"></div>
-        </a>
+                <div class="flex-1 min-w-0">
+                    <h2 class="text-xl font-semibold text-white/90 mb-1">Hackathons</h2>
+                    <p class="text-sm text-white/40 truncate">
+                        Devpost &middot; MLH &middot; Devfolio &middot; LabLab &mdash; {{ hackathon_count }} events
+                    </p>
+                </div>
+                <svg class="w-5 h-5 shrink-0 text-white/25 group-hover:text-indigo-300 group-hover:translate-x-1 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7-7 7"/>
+                </svg>
+                <div class="absolute inset-0 rounded-2xl border border-transparent group-hover:border-indigo-500/25 transition-colors pointer-events-none"></div>
+            </a>
 
-        <a href="{% url 'events:tech_events' %}" class="group relative block p-8 rounded-2xl border border-white/10 bg-white/[0.03] card-hover transition-all duration-300 glow-hover">
-            <div class="flex items-center gap-3 mb-4">
-                <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500/25 to-purple-600/25 flex items-center justify-center">
-                    <svg class="w-5 h-5 text-indigo-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <a href="{% url 'events:tech_events' %}" class="group relative flex items-center gap-6 p-7 rounded-2xl border border-white/10 bg-white/[0.03] card-hover transition-all duration-300 glow-hover">
+                <div class="w-12 h-12 shrink-0 rounded-xl bg-gradient-to-br from-sky-500/25 to-rose-500/25 flex items-center justify-center">
+                    <svg class="w-6 h-6 text-sky-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
                     </svg>
                 </div>
-                <span class="text-xs font-medium text-white/30 uppercase tracking-wider">2 sources</span>
-            </div>
-            <h2 class="text-xl font-semibold text-white/90 mb-1">Tech Events</h2>
-            <p class="text-sm text-white/40 mb-6">
-                Luma tech category &amp; Meetup — {{ tech_event_count }} events
-            </p>
-            <div class="flex items-center gap-2">
-                <span class="text-xs text-indigo-300">Luma</span>
-                <span class="text-white/10">&bull;</span>
-                <span class="text-xs text-indigo-300">Meetup</span>
-            </div>
-            <div class="absolute inset-0 rounded-2xl border border-transparent group-hover:border-indigo-500/25 transition-colors"></div>
-        </a>
-    </div>
-
-    <div class="mt-16 text-center">
-        <div class="inline-flex items-center gap-3 px-5 py-3 rounded-full border border-white/10 bg-white/[0.03] text-sm text-white/40">
-            <div class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></div>
-            Data refreshed automatically via self-healing scrapers
+                <div class="flex-1 min-w-0">
+                    <h2 class="text-xl font-semibold text-white/90 mb-1">Tech Events</h2>
+                    <p class="text-sm text-white/40 truncate">
+                        Luma &middot; Meetup &mdash; {{ tech_event_count }} events
+                    </p>
+                </div>
+                <svg class="w-5 h-5 shrink-0 text-white/25 group-hover:text-indigo-300 group-hover:translate-x-1 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7-7 7"/>
+                </svg>
+                <div class="absolute inset-0 rounded-2xl border border-transparent group-hover:border-indigo-500/25 transition-colors pointer-events-none"></div>
+            </a>
         </div>
+
+        {% if ending_soon %}
+        <section class="mt-16">
+            <div class="flex items-end justify-between mb-6 flex-wrap gap-2">
+                <div>
+                    <h2 class="text-2xl font-bold text-white/95 tracking-tight">Ending this week</h2>
+                    <p class="text-sm text-white/40 mt-1">{{ ending_week_count }} deadline{{ ending_week_count|pluralize:"s" }} in the next 7 days — these are the ones to enter now.</p>
+                </div>
+                <a href="{% url 'events:hackathons' %}?soon=1"
+                   class="inline-flex items-center gap-1.5 text-sm text-indigo-300 hover:text-indigo-200 transition-colors">
+                    View all
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
+                    </svg>
+                </a>
+            </div>
+            <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+                {% for event in ending_soon %}
+                    {% include "events/_event_card.html" with event=event %}
+                {% endfor %}
+            </div>
+        </section>
+        {% endif %}
     </div>
 </div>
 {% endblock %}

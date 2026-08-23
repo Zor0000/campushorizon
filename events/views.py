@@ -1,6 +1,6 @@
 from datetime import timedelta
 
-from django.db.models import Q, Count
+from django.db.models import Q, Count, F, Max
 from django.shortcuts import render
 from django.utils import timezone
 
@@ -76,7 +76,7 @@ def _get_feed(request, sources, category):
     if sort == 'newest':
         queryset = queryset.order_by('-created_at')
     else:
-        queryset = queryset.order_by('deadline')
+        queryset = queryset.order_by(F('deadline').asc(nulls_last=True))
 
     source_counts = dict(
         Event.objects.filter(source__in=sources)
@@ -122,11 +122,31 @@ def _get_feed(request, sources, category):
 
 
 def landing(request):
+    now = timezone.now()
+    week_ahead = now + timedelta(days=7)
+
     hackathon_count = Event.objects.filter(source__in=HACKATHON_SOURCES).count()
     tech_event_count = Event.objects.filter(source__in=TECH_EVENT_SOURCES).count()
+
+    ending_soon_qs = Event.objects.filter(
+        source__in=HACKATHON_SOURCES,
+        deadline__gte=now,
+        deadline__lte=week_ahead,
+    )
+
+    ending_week_count = ending_soon_qs.count()
+    ending_soon = list(ending_soon_qs.order_by('deadline')[:8])
+
+    last_refreshed = Event.objects.aggregate(t=Max('last_updated'))['t']
+
     return render(request, 'events/landing.html', {
         'hackathon_count': hackathon_count,
         'tech_event_count': tech_event_count,
+        'total_count': hackathon_count + tech_event_count,
+        'ending_week_count': ending_week_count,
+        'ending_soon': ending_soon,
+        'last_refreshed': last_refreshed,
+        'source_count': len(Source.values),
     })
 
 
