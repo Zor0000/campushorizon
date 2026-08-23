@@ -16,7 +16,11 @@ SECRET_KEY = os.environ.get(
 DEBUG = os.environ.get('DJANGO_DEBUG', 'true').lower() == 'true'
 
 ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'testserver']
-# Accept any Railway / Vercel / custom domain set via env
+# Railway injects this automatically — no manual config needed
+_railway_domain = os.environ.get('RAILWAY_PUBLIC_DOMAIN', '')
+if _railway_domain:
+    ALLOWED_HOSTS.append(_railway_domain)
+# Any extra custom domains (comma-separated)
 _extra_hosts = os.environ.get('DJANGO_ALLOWED_HOSTS', '')
 if _extra_hosts:
     ALLOWED_HOSTS += [h.strip() for h in _extra_hosts.split(',') if h.strip()]
