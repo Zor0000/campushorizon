@@ -485,7 +485,7 @@ class ViewTest(TestCase):
     def test_filter_source_only_returns_that_source(self):
         resp = self.client.get('/hackathons/?source=devpost')
         content = resp.content.decode()
-        self.assertIn('RevenueCat', content)
+        self.assertIn('Reverie Hacks', content)
         self.assertNotIn('Global Hack Week', content)
 
     def test_filter_soon_returns_events(self):
@@ -545,3 +545,56 @@ class ViewTest(TestCase):
 
         resp = self.client.get('/')
         self.assertEqual(resp.context['ending_week_count'], expected)
+
+    def test_start_date_badge_text_for_events(self):
+        from django.utils import timezone
+        from datetime import timedelta
+        from events.templatetags.event_filters import deadline_badge_text
+
+        now = timezone.now()
+        luma_event = Event(source=Source.LUMA, deadline=now + timedelta(days=2, hours=1))
+        self.assertEqual(deadline_badge_text(luma_event), 'Starts in 2d')
+
+        meetup_event = Event(source=Source.MEETUP, deadline=now + timedelta(hours=2))
+        self.assertEqual(deadline_badge_text(meetup_event), 'Starts today')
+
+        mlh_event = Event(source=Source.MLH, deadline=now - timedelta(days=1))
+        self.assertEqual(deadline_badge_text(mlh_event), 'Finished')
+
+        devpost_event = Event(source=Source.DEVPOST, deadline=now + timedelta(days=2, hours=1))
+        self.assertEqual(deadline_badge_text(devpost_event), 'Ends in 2d')
+
+    def test_clean_title_filter(self):
+        from events.templatetags.event_filters import clean_title
+        all_caps = "FREE 5 - DAY CLOUD ENGINEERING BOOTCAMP | AUGUST 2026 | CODING MACAW"
+        cleaned = clean_title(all_caps)
+        self.assertIn("Free", cleaned)
+        self.assertIn("Bootcamp", cleaned)
+
+        acronym_title = "BUILDING PRODUCTION AI AGENTS WITH MCP"
+        cleaned_acronym = clean_title(acronym_title)
+        self.assertIn("AI", cleaned_acronym)
+        self.assertIn("MCP", cleaned_acronym)
+
+        redundant = "Socializing for UX · UX Group"
+        self.assertEqual(clean_title(redundant), "Socializing for UX · UX Group")
+
+    def test_pagination_and_load_more(self):
+        resp = self.client.get('/hackathons/')
+        self.assertEqual(resp.status_code, 200)
+        self.assertIn('page_obj', resp.context)
+        self.assertEqual(len(resp.context['events']), 24)
+        self.assertTrue(resp.context['page_obj'].has_next())
+
+        resp_p2 = self.client.get('/hackathons/?page=2')
+        self.assertEqual(resp_p2.status_code, 200)
+        self.assertEqual(resp_p2.context['page_obj'].number, 2)
+
+    def test_navbar_active_state(self):
+        resp_h = self.client.get('/hackathons/')
+        content_h = resp_h.content.decode()
+        self.assertIn('Hackathons', content_h)
+
+        resp_t = self.client.get('/tech-events/')
+        content_t = resp_t.content.decode()
+        self.assertIn('Tech Events', content_t)

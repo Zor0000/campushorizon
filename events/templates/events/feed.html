@@ -11,7 +11,7 @@
                 <h1 class="text-3xl font-bold text-white/95 tracking-tight">{{ page_title }}</h1>
                 <p class="text-sm text-white/40 mt-1">
                     <span>{{ total_count }}</span> event{{ total_count|pluralize }}
-                    {% if request.GET.sort == 'newest' %} &middot; newest first{% else %} &middot; sorted by deadline{% endif %}
+                    {% if request.GET.sort == 'newest' %} &middot; newest first{% elif category == 'tech-events' %} &middot; sorted by event date{% else %} &middot; sorted by deadline{% endif %}
                 </p>
             </div>
             <span id="updating" class="htmx-indicator inline-flex items-center gap-2 text-xs text-indigo-300">
@@ -122,7 +122,9 @@
                     <label for="sort" class="sr-only">Sort</label>
                     <select name="sort" id="sort"
                             class="appearance-none pl-4 pr-9 py-2.5 rounded-xl border border-white/10 bg-white/[0.03] text-sm text-white/70 focus:outline-none focus:border-indigo-500/40 cursor-pointer">
-                        <option value="deadline" {% if request.GET.sort != 'newest' %}selected{% endif %}>Ending soonest</option>
+                        <option value="deadline" {% if request.GET.sort != 'newest' %}selected{% endif %}>
+                            {% if category == 'tech-events' %}Starting soonest{% else %}Ending soonest{% endif %}
+                        </option>
                         <option value="newest" {% if request.GET.sort == 'newest' %}selected{% endif %}>Newest first</option>
                     </select>
                     <svg class="absolute right-3.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-white/30 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -159,17 +161,43 @@
             {% endif %}
         </form>
 
-        <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-            {% for event in events %}
-                <div class="stagger-item" style="animation-delay: {{ forloop.counter0|stagger_delay }}">
-                    {% include "events/_event_card.html" with event=event %}
+        <div id="events-grid" class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+            <div id="load-more-batch" class="contents">
+                {% for event in events %}
+                    <div class="stagger-item h-full" style="animation-delay: {{ forloop.counter0|stagger_delay }}">
+                        {% include "events/_event_card.html" with event=event %}
+                    </div>
+                {% empty %}
+                <div class="col-span-full py-20 text-center text-white/30">
+                    <p class="text-lg mb-1">No events found</p>
+                    <p class="text-sm">Try adjusting your filters</p>
                 </div>
-            {% empty %}
-            <div class="col-span-full py-20 text-center text-white/30">
-                <p class="text-lg mb-1">No events found</p>
-                <p class="text-sm">Try adjusting your filters</p>
+                {% endfor %}
+
+                {% if page_obj.has_next %}
+                <div id="load-more-container" class="col-span-full mt-6 text-center">
+                    <button hx-get="{{ next_page_url }}"
+                            hx-target="#load-more-container"
+                            hx-swap="outerHTML"
+                            hx-select="#load-more-batch"
+                            hx-indicator="#load-more-spinner"
+                            class="inline-flex items-center gap-2.5 px-6 py-3.5 rounded-xl border border-white/10 bg-white/[0.03] hover:bg-white/[0.08] hover:border-white/20 text-sm font-medium text-white/80 hover:text-white transition-all cursor-pointer shadow-lg shadow-black/20">
+                        <span id="load-more-spinner" class="htmx-indicator inline-flex items-center">
+                            <svg class="w-4 h-4 animate-spin text-indigo-300 mr-2" fill="none" viewBox="0 0 24 24">
+                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+                            </svg>
+                        </span>
+                        <span>Load more events</span>
+                        {% if remaining_count %}
+                        <span class="px-2 py-0.5 rounded-md bg-white/10 text-xs text-white/60 font-normal">
+                            {{ remaining_count }} remaining
+                        </span>
+                        {% endif %}
+                    </button>
+                </div>
+                {% endif %}
             </div>
-            {% endfor %}
         </div>
 
         {% if undated_events %}
@@ -182,7 +210,7 @@
             </summary>
             <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-3 mt-4">
                 {% for event in undated_events %}
-                    <div class="stagger-item" style="animation-delay: {{ forloop.counter0|stagger_delay }}">
+                    <div class="stagger-item h-full" style="animation-delay: {{ forloop.counter0|stagger_delay }}">
                         {% include "events/_event_card.html" with event=event %}
                     </div>
                 {% endfor %}

@@ -1,10 +1,13 @@
 from datetime import timedelta
 
+from django.core.paginator import Paginator
 from django.db.models import Q, Count, Max
 from django.shortcuts import render
 from django.utils import timezone
 
 from events.models import Event, Source
+
+PAGE_SIZE = 24
 
 HACKATHON_SOURCES = [Source.DEVPOST, Source.MLH, Source.DEVFOLIO, Source.LABLAB]
 TECH_EVENT_SOURCES = [Source.LUMA, Source.MEETUP]
@@ -25,6 +28,7 @@ FILTER_CONFIG = {
 
 def _remove_url(request, key, value=None):
     params = request.GET.copy()
+    params.pop('page', None)
     if value is None:
         params.pop(key, None)
     else:
@@ -35,6 +39,13 @@ def _remove_url(request, key, value=None):
                 params.appendlist(key, v)
     qs = params.urlencode()
     return f'{request.path}?{qs}' if qs else request.path
+
+
+def _page_url(request, page_number):
+    params = request.GET.copy()
+    params['page'] = page_number
+    qs = params.urlencode()
+    return f'{request.path}?{qs}'
 
 
 def _get_feed(request, sources, category):
@@ -164,10 +175,20 @@ def hackathons(request):
         s for s in request.GET.getlist('source')
         if s in [x.value for x in HACKATHON_SOURCES]
     ]
+
+    paginator = Paginator(dated, PAGE_SIZE)
+    page_num = request.GET.get('page', 1)
+    page_obj = paginator.get_page(page_num)
+    remaining_count = max(0, paginator.count - (page_obj.number * PAGE_SIZE))
+    next_page_url = _page_url(request, page_obj.next_page_number()) if page_obj.has_next() else None
+
     return render(request, 'events/feed.html', {
-        'events': dated,
+        'events': page_obj.object_list,
+        'page_obj': page_obj,
+        'remaining_count': remaining_count,
+        'next_page_url': next_page_url,
         'undated_events': undated,
-        'total_count': dated.count() + undated.count(),
+        'total_count': paginator.count + undated.count(),
         'source_counts': source_counts,
         'active_filters': active_filters,
         'filter_config': config,
@@ -186,10 +207,20 @@ def tech_events(request):
         s for s in request.GET.getlist('source')
         if s in [x.value for x in TECH_EVENT_SOURCES]
     ]
+
+    paginator = Paginator(dated, PAGE_SIZE)
+    page_num = request.GET.get('page', 1)
+    page_obj = paginator.get_page(page_num)
+    remaining_count = max(0, paginator.count - (page_obj.number * PAGE_SIZE))
+    next_page_url = _page_url(request, page_obj.next_page_number()) if page_obj.has_next() else None
+
     return render(request, 'events/feed.html', {
-        'events': dated,
+        'events': page_obj.object_list,
+        'page_obj': page_obj,
+        'remaining_count': remaining_count,
+        'next_page_url': next_page_url,
         'undated_events': undated,
-        'total_count': dated.count() + undated.count(),
+        'total_count': paginator.count + undated.count(),
         'source_counts': source_counts,
         'active_filters': active_filters,
         'filter_config': config,

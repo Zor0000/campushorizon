@@ -45,19 +45,31 @@ def days_left(deadline):
 def deadline_badge_class(deadline):
     days = days_left(deadline)
     if days == 'ended':
-        return 'bg-white/5 text-white/40 border-white/10'
+        return 'border-white/5 bg-white/[0.02] text-white/30'
     if days == 'today':
-        return 'bg-red-500/20 text-red-400 border-red-500/30'
+        return 'border-red-500/25 bg-red-500/10 text-red-400'
     if isinstance(days, int) and days <= 7:
-        return 'bg-amber-500/20 text-amber-400 border-amber-500/30'
-    return 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30'
+        return 'border-amber-500/25 bg-amber-500/10 text-amber-400'
+    return 'border-white/10 bg-white/[0.04] text-white/50'
+
+
+START_DATE_SOURCES = {'mlh', 'luma', 'meetup'}
+
+TECH_ACRONYMS = {
+    'ai', 'ml', 'aws', 'gcp', 'ui', 'ux', 'api', 'dsa', 'qa', 'gdk', 'gtm',
+    'k8s', 'kcd', 'ibm', 'amd', 'mcp', 'jwt', 'sql', 'llm', 'cv', 'nlp',
+    'jug', 'mug', 'owasp', 'foss', 'devops', 'ci/cd', 'llms',
+}
 
 
 @register.filter
 def deadline_badge_text(event):
     deadline = event.deadline
     days = days_left(deadline)
-    if event.source == 'mlh':
+    source_val = getattr(event, 'source', '')
+    if hasattr(source_val, 'value'):
+        source_val = source_val.value
+    if source_val in START_DATE_SOURCES:
         if days == 'ended':
             return 'Finished'
         if days == 'today':
@@ -72,6 +84,33 @@ def deadline_badge_text(event):
     if isinstance(days, int):
         return f'Ends in {days}d'
     return 'No date'
+
+
+@register.filter
+def clean_title(title):
+    import re
+    if not title:
+        return ''
+    title = str(title).strip()
+    if ' · ' in title:
+        main_part, group_part = title.rsplit(' · ', 1)
+        if group_part.lower() in main_part.lower():
+            title = main_part.strip()
+
+    letters = [c for c in title if c.isalpha()]
+    if letters and len(letters) > 8 and (sum(1 for c in letters if c.isupper()) / len(letters)) > 0.8:
+        words = title.split()
+        cleaned_words = []
+        for w in words:
+            stripped = re.sub(r'^[^\w]+|[^\w]+$', '', w).lower()
+            if stripped in TECH_ACRONYMS:
+                cleaned_words.append(w.upper())
+            elif len(stripped) <= 3 and stripped.isalpha() and stripped not in {'the', 'and', 'for', 'day'}:
+                cleaned_words.append(w.upper())
+            else:
+                cleaned_words.append(w.capitalize())
+        title = ' '.join(cleaned_words)
+    return title
 
 
 @register.filter

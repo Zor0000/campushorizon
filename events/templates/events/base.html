@@ -34,29 +34,46 @@
     </style>
     {% block extra_style %}{% endblock %}
 </head>
-<body class="min-h-screen text-white antialiased">
-    <nav class="border-b border-white/5">
+<body class="min-h-screen text-white antialiased flex flex-col justify-between">
+    <nav class="border-b border-white/5 bg-[#0A0A0B]/80 backdrop-blur-md sticky top-0 z-30">
         <div class="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
-            <a href="{% url 'events:landing' %}" class="flex items-center gap-2">
-                <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center">
+            <a href="{% url 'events:landing' %}" class="flex items-center gap-2.5 group">
+                <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shadow-lg shadow-indigo-500/20 group-hover:scale-105 transition-transform">
                     <span class="text-white font-bold text-sm">CH</span>
                 </div>
-                <span class="font-semibold text-white/90">CampusHorizon</span>
+                <span class="font-semibold text-white/90 group-hover:text-white transition-colors">CampusHorizon</span>
             </a>
-            <div class="flex items-center gap-6">
-                <a href="{% url 'events:hackathons' %}" class="text-sm text-white/50 hover:text-white/90 transition-colors">Hackathons</a>
-                <a href="{% url 'events:tech_events' %}" class="text-sm text-white/50 hover:text-white/90 transition-colors">Tech Events</a>
+            <div class="flex items-center gap-2">
+                <a href="{% url 'events:hackathons' %}" class="px-3.5 py-1.5 rounded-xl text-sm transition-all {% if request.resolver_match.url_name == 'hackathons' %}bg-white/10 text-white font-medium border border-white/10 shadow-sm{% else %}text-white/50 hover:text-white/90 hover:bg-white/[0.04]{% endif %}">
+                    Hackathons
+                </a>
+                <a href="{% url 'events:tech_events' %}" class="px-3.5 py-1.5 rounded-xl text-sm transition-all {% if request.resolver_match.url_name == 'tech_events' %}bg-white/10 text-white font-medium border border-white/10 shadow-sm{% else %}text-white/50 hover:text-white/90 hover:bg-white/[0.04]{% endif %}">
+                    Tech Events
+                </a>
             </div>
         </div>
     </nav>
 
-    <main>
+    <main class="flex-1">
         {% block content %}{% endblock %}
     </main>
 
-    <footer class="border-t border-white/5 mt-20">
-        <div class="max-w-6xl mx-auto px-6 py-8 text-center text-sm text-white/30">
-            CampusHorizon &mdash; Self-healing Bright Data scrapers for student hackathons
+    <footer class="border-t border-white/5 mt-24 bg-white/[0.01]">
+        <div class="max-w-6xl mx-auto px-6 py-10 flex flex-col md:flex-row items-center justify-between gap-6 text-sm text-white/40">
+            <div class="flex items-center gap-3">
+                <div class="w-6 h-6 rounded-md bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-xs text-white font-bold">
+                    CH
+                </div>
+                <span>CampusHorizon &mdash; Self-healing event aggregator for students</span>
+            </div>
+            <div class="flex items-center gap-4 text-xs text-white/40">
+                <span class="inline-flex items-center gap-2">
+                    <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                    Live feeds active
+                </span>
+                <span>&middot;</span>
+                <span>Powered by Bright Data</span>
+            </div>
         </div>
     </footer>
 </body>
