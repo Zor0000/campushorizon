@@ -5,6 +5,7 @@ from pathlib import Path
 from zoneinfo import ZoneInfo
 
 from events.models import Event, Source
+from events.scraper.config import LUMA_PROFILE_SLUGS
 
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
 TMP_DIR = BASE_DIR / 'tmp'
@@ -232,6 +233,10 @@ def normalize_luma(raw_data):
             continue
         seen.add(url)
 
+        slug = url.rstrip('/').split('/')[-1]
+        if slug in LUMA_PROFILE_SLUGS:
+            continue
+
         raw_date = e.get('event_date', '')
         deadline = _parse_luma_date(raw_date)
 
@@ -258,7 +263,7 @@ def normalize_luma(raw_data):
             'deadline': deadline,
             'prizes': '',
             'tags': [],
-            'is_online': None,
+            'is_online': is_online,
             'location': e.get('location', ''),
         })
     return events

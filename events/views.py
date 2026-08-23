@@ -1,6 +1,6 @@
 from datetime import timedelta
 
-from django.db.models import Q, Count, F, Max
+from django.db.models import Q, Count, Max
 from django.shortcuts import render
 from django.utils import timezone
 
@@ -73,10 +73,16 @@ def _get_feed(request, sources, category):
         )
 
     sort = request.GET.get('sort', 'deadline')
+
+    dated = queryset.filter(deadline__isnull=False)
+    undated = queryset.filter(deadline__isnull=True)
+
     if sort == 'newest':
-        queryset = queryset.order_by('-created_at')
+        dated = dated.order_by('-created_at')
+        undated = undated.order_by('-created_at')
     else:
-        queryset = queryset.order_by(F('deadline').asc(nulls_last=True))
+        dated = dated.order_by('deadline')
+        undated = undated.order_by('-created_at')
 
     source_counts = dict(
         Event.objects.filter(source__in=sources)
@@ -118,7 +124,7 @@ def _get_feed(request, sources, category):
             'remove_url': _remove_url(request, 'ended'),
         })
 
-    return queryset, source_counts, active_filters, config
+    return dated, undated, source_counts, active_filters, config
 
 
 def landing(request):
@@ -151,7 +157,7 @@ def landing(request):
 
 
 def hackathons(request):
-    events, source_counts, active_filters, config = _get_feed(
+    dated, undated, source_counts, active_filters, config = _get_feed(
         request, HACKATHON_SOURCES, 'hackathons'
     )
     selected_sources = [
@@ -159,7 +165,9 @@ def hackathons(request):
         if s in [x.value for x in HACKATHON_SOURCES]
     ]
     return render(request, 'events/feed.html', {
-        'events': events,
+        'events': dated,
+        'undated_events': undated,
+        'total_count': dated.count() + undated.count(),
         'source_counts': source_counts,
         'active_filters': active_filters,
         'filter_config': config,
@@ -171,7 +179,7 @@ def hackathons(request):
 
 
 def tech_events(request):
-    events, source_counts, active_filters, config = _get_feed(
+    dated, undated, source_counts, active_filters, config = _get_feed(
         request, TECH_EVENT_SOURCES, 'tech-events'
     )
     selected_sources = [
@@ -179,7 +187,9 @@ def tech_events(request):
         if s in [x.value for x in TECH_EVENT_SOURCES]
     ]
     return render(request, 'events/feed.html', {
-        'events': events,
+        'events': dated,
+        'undated_events': undated,
+        'total_count': dated.count() + undated.count(),
         'source_counts': source_counts,
         'active_filters': active_filters,
         'filter_config': config,

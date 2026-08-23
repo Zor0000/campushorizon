@@ -65,6 +65,12 @@ COLLECTORS = {
     },
 }
 
+LUMA_PROFILE_SLUGS = {
+    'nucleate',
+    'ycombinator-official',
+    'lennysnewsletter',
+}
+
 SOURCE_CATEGORIES = {
     'devpost': 'hackathon',
     'devpost_online': 'hackathon',
